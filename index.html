@@ -1418,7 +1418,169 @@ function patchForCombo() {
 setTimeout(() => {
   if (typeof patchForCombo === 'function') patchForCombo();
 }, 500);
+// ==================== PERFORMANCE & KELLY SIMULATOR ====================
+function addPerformanceTab() {
+  const mtabs = document.getElementById('mtabs');
+  if (mtabs && !document.querySelector('.mtab[data-m="performance"]')) {
+    const btn = document.createElement('button');
+    btn.className = 'mtab';
+    btn.setAttribute('data-m', 'performance');
+    btn.textContent = 'Performance';
+    mtabs.appendChild(btn);
+  }
+}
 
+// Calcola le statistiche di rendimento basate sullo storico
+function getPerformanceStats() {
+  const history = ST.history || [];
+  const resolved = history.filter(p => p.status === 'won' || p.status === 'lost');
+  const won = resolved.filter(p => p.status === 'won');
+  const lost = resolved.filter(p => p.status === 'lost');
+  const totalBets = resolved.length;
+  const winRate = totalBets ? (won.length / totalBets) * 100 : 0;
+  
+  // Simula bankroll con puntata fissa (es. 1 unità per scommessa)
+  let bankroll = 100; // unità iniziali
+  let peak = 100;
+  let drawdown = 0;
+  const equityCurve = [];
+  for (let i = 0; i < resolved.length; i++) {
+    const p = resolved[i];
+    // Se non c'è una quota associata, usiamo una quota fittizia basata sul mercato (es. 1.90)
+    let odds = p.odds || 1.90;
+    if (p.status === 'won') {
+      bankroll += (odds - 1);
+    } else {
+      bankroll -= 1;
+    }
+    if (bankroll > peak) peak = bankroll;
+    const dd = (peak - bankroll) / peak * 100;
+    if (dd > drawdown) drawdown = dd;
+    equityCurve.push({ bet: i+1, bankroll: bankroll });
+  }
+  const roi = ((bankroll - 100) / 100) * 100;
+  
+  // Statistiche per categoria (mercato)
+  const categories = {};
+  resolved.forEach(p => {
+    const cat = p.category || 'Altro';
+    if (!categories[cat]) categories[cat] = { total: 0, won: 0, lost: 0, oddsSum: 0 };
+    categories[cat].total++;
+    if (p.status === 'won') {
+      categories[cat].won++;
+      categories[cat].oddsSum += (p.odds || 1.90);
+    } else {
+      categories[cat].lost++;
+    }
+  });
+  const catStats = Object.keys(categories).map(cat => {
+    const c = categories[cat];
+    const winRateCat = c.total ? (c.won / c.total) * 100 : 0;
+    const avgOdds = c.won ? c.oddsSum / c.won : 0;
+    // Kelly fraction: (p * odds - 1) / (odds - 1)
+    const p = winRateCat / 100;
+    const kelly = (p * avgOdds - 1) / (avgOdds - 1);
+    const suggestedKelly = isFinite(kelly) && kelly > 0 ? Math.min(kelly, 0.25) : 0;
+    return { cat, total: c.total, won: c.won, lost: c.lost, winRate: winRateCat, avgOdds, suggestedKelly };
+  }).sort((a,b) => b.winRate - a.winRate);
+  
+  // Calcola Kelly globale
+  const globalWinProb = winRate / 100;
+  const globalAvgOdds = won.length ? won.reduce((sum, p) => sum + (p.odds || 1.90), 0) / won.length : 1.90;
+  const globalKelly = (globalWinProb * globalAvgOdds - 1) / (globalAvgOdds - 1);
+  const suggestedBankrollPercent = isFinite(globalKelly) && globalKelly > 0 ? Math.min(globalKelly, 0.25) * 100 : 0;
+  
+  return {
+    totalBets, won: won.length, lost: lost.length, winRate, roi, bankrollFinal: bankroll,
+    peak, drawdown, equityCurve, catStats, suggestedBankrollPercent, globalKelly
+  };
+}
+
+// Renderizza la vista Performance
+function renderPerformanceView() {
+  const stats = getPerformanceStats();
+  const main = document.getElementById('main');
+  if (!main) return;
+  
+  if (stats.totalBets === 0) {
+    main.innerHTML = `<div class="empty"><div class="ico">📊</div><p>Nessun pronostico concluso (vinto/perso) nello storico. Vai nella sezione Storico e imposta lo stato di alcuni pronostici.</p></div>`;
+    return;
+  }
+  
+  // Grafico a barre testuale per l'equity curve (semplice rappresentazione)
+  const maxBankroll = Math.max(...stats.equityCurve.map(e => e.bankroll), 100);
+  const minBankroll = Math.min(...stats.equityCurve.map(e => e.bankroll), 100);
+  const range = maxBankroll - minBankroll;
+  const chartHeight = 80; // px
+  const chartPoints = stats.equityCurve.map(e => {
+    const y = chartHeight - ((e.bankroll - minBankroll) / range) * chartHeight;
+    return `${(e.bet / stats.totalBets) * 100}% ${y}px`;
+  }).join(', ');
+  
+  const chartHtml = `<div style="margin: 20px 0; background: var(--s2); border-radius: 12px; padding: 12px;">
+    <div class="bk-t">Andamento del bankroll (puntata fissa 1 unità)</div>
+    <svg viewBox="0 0 100 ${chartHeight+20}" style="width:100%; background: var(--bg); border-radius: 8px;">
+      <polyline points="${chartPoints}" fill="none" stroke="var(--grn)" stroke-width="2"/>
+      <line x1="0" y1="${chartHeight}" x2="100" y2="${chartHeight}" stroke="var(--t3)" stroke-width="0.5"/>
+      <text x="0" y="${chartHeight+12}" fill="var(--t3)" font-size="6">${minBankroll.toFixed(1)}</text>
+      <text x="90" y="10" fill="var(--t3)" font-size="6">${maxBankroll.toFixed(1)}</text>
+    </svg>
+    <div class="note">Bankroll iniziale: 100 | Finale: ${stats.bankrollFinal.toFixed(2)} | ROI: ${stats.roi.toFixed(1)}%</div>
+  </div>`;
+  
+  const catTable = `<table class="tablemini"><thead><tr><th>Categoria</th><th>Vinte/Pers</th><th>Win rate</th><th>Avg odds (vinte)</th><th>Suggerimento Kelly</th></tr></thead><tbody>${
+    stats.catStats.map(c => `<tr>
+      <td>${escapeHtml(c.cat)}</td>
+      <td>${c.won}/${c.lost}</td>
+      <td>${c.winRate.toFixed(1)}%</td>
+      <td>${c.avgOdds.toFixed(2)}</td>
+      <td class="${c.suggestedKelly > 0.05 ? 'good' : 'neu'}">${(c.suggestedKelly * 100).toFixed(1)}% del bankroll</td>
+    </tr>`).join('')
+  }</tbody></table>`;
+  
+  main.innerHTML = `
+    <div class="sec"><div class="tag tag-mg">Performance & Kelly</div><div class="sec-ct">Basato su ${stats.totalBets} pronostici risolti</div></div>
+    <div class="statsgrid">
+      <div class="statcard"><div class="k">Vinte</div><div class="v">${stats.won}</div></div>
+      <div class="statcard"><div class="k">Perse</div><div class="v">${stats.lost}</div></div>
+      <div class="statcard"><div class="k">Win rate</div><div class="v">${stats.winRate.toFixed(1)}%</div></div>
+      <div class="statcard"><div class="k">ROI</div><div class="v ${stats.roi > 0 ? 'good' : 'warn'}">${stats.roi > 0 ? '+' : ''}${stats.roi.toFixed(1)}%</div></div>
+      <div class="statcard"><div class="k">Drawdown max</div><div class="v">${stats.drawdown.toFixed(1)}%</div></div>
+      <div class="statcard"><div class="k">Kelly suggerito</div><div class="v good">${stats.suggestedBankrollPercent.toFixed(1)}%</div></div>
+    </div>
+    ${chartHtml}
+    <div class="bk"><div class="bk-t">Rendimento per categoria</div>${catTable}</div>
+    <div class="note">💡 Il suggerimento Kelly rappresenta la frazione ottimale del bankroll da puntare su ogni scommessa della categoria per massimizzare la crescita a lungo termine. Valori >5% indicano un forte edge.</div>
+  `;
+}
+
+// Estende currentRows per includere 'performance'
+const originalCurrentRowsPerf = window.currentRows;
+window.currentRows = function() {
+  if (ST.market === 'performance') return []; // non usato, ma serve per evitare errori
+  return originalCurrentRowsPerf();
+};
+
+// Override del rendering per il tab Performance
+function patchForPerformance() {
+  addPerformanceTab();
+  setInterval(() => {
+    if (ST.market === 'performance') {
+      const main = document.getElementById('main');
+      if (main && !main.hasAttribute('data-perf-rendered')) {
+        renderPerformanceView();
+        main.setAttribute('data-perf-rendered', 'true');
+      }
+    } else {
+      const main = document.getElementById('main');
+      if (main) main.removeAttribute('data-perf-rendered');
+    }
+  }, 200);
+}
+
+setTimeout(() => {
+  if (typeof patchForPerformance === 'function') patchForPerformance();
+}, 600);
 initApp();
 })();
 </script>
