@@ -36,11 +36,6 @@ button{border:none;background:none;cursor:pointer}
 .hdr h1{font-size:1.35rem;font-weight:700;color:#fff;letter-spacing:-.4px}
 .hdr h1 span{color:var(--grn)}
 .hdr-info{font:500 .8rem var(--S);color:var(--t3)}
-.mtabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.mtabs::-webkit-scrollbar{display:none}
-.mtab{padding:10px 16px;border-radius:24px;font:600 .85rem var(--S);color:var(--t2);border:1px solid var(--brd);background:var(--s1);white-space:nowrap;transition:all .2s;flex-shrink:0}
-.mtab:hover,.mtab:focus-visible{color:var(--t1);border-color:var(--brd2)}
-.mtab.active{background:var(--grn);color:var(--bg);border-color:var(--grn);font-weight:700}
 .panel{background:var(--s1);border:1px solid var(--brd);border-radius:14px;padding:12px;margin-bottom:12px}
 .dataset-toggle{display:flex;align-items:center;justify-content:space-between;padding:8px 0;cursor:pointer;user-select:none}
 .dataset-toggle h3{font-size:1rem;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:6px}
@@ -175,7 +170,7 @@ button{border:none;background:none;cursor:pointer}
   .toolbar .search,.toolbar .select,.toolbar .pdf-btn,.toolbar .aux-btn{width:100%}
   .det{padding:18px 14px}
 }
-  /* Nuovo stile per la griglia dei menu (sostituisce mtabs scroll) */
+/* Nuovo stile per la griglia dei menu */
 .mtabs-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, auto));
@@ -226,9 +221,6 @@ button{border:none;background:none;cursor:pointer}
   color: var(--bg);
   border-color: var(--grn);
 }
-.chip-icon {
-  margin-right: 6px;
-}
 @media (max-width: 500px) {
   .mtabs-grid {
     grid-template-columns: repeat(auto-fill, minmax(85px, auto));
@@ -266,7 +258,6 @@ button{border:none;background:none;cursor:pointer}
     <button class="mtab" data-m="datamining">📊 DataMining</button>
   </div>
 
-  <!-- Menu a tendina per i dataset -->
   <div class="panel">
     <div class="dataset-toggle" id="datasetToggle">
       <h3><span>📂</span> Gestione Dataset</h3>
@@ -334,16 +325,13 @@ button{border:none;background:none;cursor:pointer}
   function parsePlShots(t){const L=parseCsvLines(t);if(L.length<2)return[];const sep=L[0].includes(';')?';':',';const s=x=>(x||'').replace(/^"|"$/g,'').trim();const h=splitCsvLine(L[0],sep).map(s);const hi={};h.forEach((x,i)=>hi[x]=i);const g=(r,k)=>s(r[hi[k]]||'');const pf=x=>parseFloat((x||'0').replace(',','.'))||0;const R=[];for(let i=1;i<L.length;i++){const f=splitCsvLine(L[i],sep).map(s);if(f.length<5)continue;const oR=g(f,'Ora');const tm=oR.match(/(\d{1,2}:\d{2})/);const dt=oR.match(/(\d{2}-\d{2})/);const ora=(dt?dt[1].replace('-','/')+' ':'')+(tm?tm[1]:'');R.push({ora:ora.trim(),lega:g(f,'Campionato'),partita:g(f,'Partita'),nome:g(f,'Nome'),squadra:g(f,'Squadra'),pos:g(f,'Pos.'),pres:parseInt(pf(g(f,'Presenze'))),min:pf(g(f,'Minuti')),tiriTot:pf(g(f,'Tiri Totali')),tiriPorta:pf(g(f,'Tiri in porta')),gol:pf(g(f,'Gol')),rit:parseInt(g(f,'Rit.'))||0});}return R;}
   function parseGZ(t){const L=parseCsvLines(t);if(L.length<2)return[];const sep=L[0].includes(';')?';':',';const s=x=>(x||'').replace(/^"|"$/g,'').trim();const h=splitCsvLine(L[0],sep).map(s);const hi={};h.forEach((x,i)=>hi[x]=i);const g=(r,k)=>s(r[hi[k]]||'');const pf=x=>{if(x===''||x===undefined)return null;const v=parseFloat(String(x).replace(',','.'));return isNaN(v)?null:v;};const R=[];for(let i=1;i<L.length;i++){const f=splitCsvLine(L[i],sep).map(s);if(f.length<3)continue;let dataEv=g(f,'DATA EV.');const tm=dataEv.match(/(\d{1,2}:\d{2})/);const dt=dataEv.match(/(\d{2}-\d{2})/);const ora=(dt?dt[1].replace('-','/')+' ':'')+(tm?tm[1]:'');const evento=g(f,'EVENTO');if(!evento)continue;R.push({ora:ora.trim(),nazione:g(f,'NAZIONE'),lega:g(f,'LEGA'),evento:evento,ris:g(f,'RIS.'),gz:pf(g(f,'GZ')),gzha:pf(g(f,'GZha')),igbc:pf(g(f,'IGBc')),igbo:pf(g(f,'IGBo')),igbt:pf(g(f,'IGBt')),mge:pf(g(f,'MGE')),diff:pf(g(f,'Diff'))});}return R;}
   function parseQuoteValore(t){const L=parseCsvLines(t);if(L.length<2)return[];const sep=L[0].includes(';')?';':',';const s=x=>(x||'').replace(/^"|"$/g,'').trim();const h=splitCsvLine(L[0],sep).map(s);const idxOra=h.indexOf('Ora');const idxMatch=h.indexOf('Match');const idxR=h.indexOf('R');const idxNP=h.indexOf('NP');const idxT1=h.indexOf('T1');const idxR1=h.indexOf('R1');const idxDM1=h.indexOf('DM1');const idxSpread1=h.indexOf('Spread');const idxTX=h.indexOf('TX');const idxRX=h.indexOf('RX');const idxDMX=h.indexOf('DMX');const idxSpreadX=h.indexOf('Spread',idxDMX+1);const idxT2=h.indexOf('T2');const idxR2=h.indexOf('R2');const idxDM2=h.indexOf('DM2');const idxSpread2=h.indexOf('Spread',idxDM2+1);const pf=x=>{if(x===''||x===undefined)return 0;const v=parseFloat(String(x).replace(',','.'));return isNaN(v)?0:v;};const R=[];for(let i=1;i<L.length;i++){const f=splitCsvLine(L[i],sep).map(s);if(f.length<5)continue;const ora=s(f[idxOra]||'');const match=s(f[idxMatch]||'');if(!match)continue;R.push({ora,match,r:s(f[idxR]||''),np:parseInt(pf(f[idxNP]))||0,t1:pf(f[idxT1]),r1:pf(f[idxR1]),dm1:pf(f[idxDM1]),spread1:pf(f[idxSpread1]),tx:pf(f[idxTX]),rx:pf(f[idxRX]),dmx:pf(f[idxDMX]),spreadX:pf(f[idxSpreadX]),t2:pf(f[idxT2]),r2:pf(f[idxR2]),dm2:pf(f[idxDM2]),spread2:pf(f[idxSpread2])});}return R;}
-
   function parseDataMining(t) {
     const L = parseCsvLines(t);
     if (L.length < 2) return [];
     const sep = L[0].includes(';') ? ';' : ',';
     const s = x => (x || '').replace(/^"|"$/g, '').trim();
     const header = splitCsvLine(L[0], sep).map(s);
-    
     const idx = (name) => header.findIndex(h => h.includes(name));
-    
     const iOra = idx('Ora');
     const iMatch = idx('Match');
     const iR = idx('R');
@@ -377,42 +365,30 @@ button{border:none;background:none;cursor:pointer}
     const iIGBO = idx('IGBO');
     const iSOQuota = iSOPerc + 1;
     const iRE = idx('RE');
-
     const R = [];
     for (let i = 1; i < L.length; i++) {
       const f = splitCsvLine(L[i], sep).map(s);
       if (f.length < 5) continue;
-      
       const parsePerc = (v) => parseFloat((v || '0').replace('%', '').replace(',', '.')) || 0;
       const parseFloatNum = (v) => parseFloat((v || '').replace(',', '.')) || 0;
       const parseIntNum = (v) => parseInt(v) || 0;
-      
       const oraRaw = f[iOra] || '';
       const match = f[iMatch] || '';
       if (!match) continue;
-      
       const tm = oraRaw.match(/(\d{1,2}:\d{2})/);
       const ora = tm ? tm[1] : oraRaw;
-      
       R.push({
-        ora,
-        match,
-        r: f[iR] || '',
-        rpt: f[iRpt] || '',
-        np: parseIntNum(f[iNP]),
+        ora, match, r: f[iR] || '', rpt: f[iRpt] || '', np: parseIntNum(f[iNP]),
         p1: parsePerc(f[i1Perc]), q1: parseFloatNum(f[i1Quota]),
         pX: parsePerc(f[iXPerc]), qX: parseFloatNum(f[iXQuota]),
         p2: parsePerc(f[i2Perc]), q2: parseFloatNum(f[i2Quota]),
-        mge: parseFloatNum(f[iMGE]),
-        diff: parseFloatNum(f[iDIFF]),
+        mge: parseFloatNum(f[iMGE]), diff: parseFloatNum(f[iDIFF]),
         pGG: parsePerc(f[iGGPerc]), qGG: parseFloatNum(f[iGGQuota]),
         pOV15: parsePerc(f[iOV15Perc]), qOV15: parseFloatNum(f[iOV15Quota]),
         pOV25: parsePerc(f[iOV25Perc]), qOV25: parseFloatNum(f[iOV25Quota]),
         pUN35: parsePerc(f[iUN35Perc]), qUN35: parseFloatNum(f[iUN35Quota]),
         pOV05pt: parsePerc(f[iOV05ptPerc]), qOV05pt: parseFloatNum(f[iOV05ptQuota]),
-        ic: parseIntNum(f[iIC]),
-        rc: parseIntNum(f[iRC]),
-        ro: parseIntNum(f[iRO]),
+        ic: parseIntNum(f[iIC]), rc: parseIntNum(f[iRC]), ro: parseIntNum(f[iRO]),
         pSC: parsePerc(f[iSCPerc]), igbc: parseIntNum(f[iIGBC]), qSC: parseFloatNum(f[iSCQuota]),
         pSO: parsePerc(f[iSOPerc]), igbo: parseIntNum(f[iIGBO]), qSO: parseFloatNum(f[iSOQuota]),
         re: f[iRE] || ''
@@ -458,7 +434,6 @@ button{border:none;background:none;cursor:pointer}
     if (np >= 15 && perc >= (market === 'u25' ? 50 : 45)) return 'dm-yellow';
     return 'dm-red';
   }
-
   function dmBadgeHtml(dm, market) {
     if (!dm) return '';
     let perc = 0, quota = 0, label = '';
@@ -480,7 +455,6 @@ button{border:none;background:none;cursor:pointer}
     const implied = 1 / quota;
     return (perc / 100) - implied;
   }
-
   function valueBadgeHtml(dm, market) {
     if (!dm) return '';
     let perc = 0, quota = 0;
@@ -503,20 +477,16 @@ button{border:none;background:none;cursor:pointer}
     if (!match) return null;
     return { home: parseInt(match[1]), away: parseInt(match[2]), total: parseInt(match[1]) + parseInt(match[2]) };
   }
-
   function computeBacktestStats() {
     ST.backtestStats = { ov05: { correct: 0, total: 0 }, gg: { correct: 0, total: 0 }, o25: { correct: 0, total: 0 }, u25: { correct: 0, total: 0 }, mg13: { correct: 0, total: 0 } };
     if (!ST.dataMining.length) return;
-
     ST.dataMining.forEach(dm => {
       const goals = parseGoalsFromResult(dm.r);
       if (!goals) return;
-
       const ggRow = getGgRows().find(r => normName(r.evento) === normName(dm.match));
       const o25Row = getO25Rows().find(r => normName(r.evento) === normName(dm.match));
       const u25Row = getU25Rows().find(r => normName(r.evento) === normName(dm.match));
       const mg13Row = getMgRows().find(r => normName(r.evento) === normName(dm.match));
-
       if (ggRow && ggRow.aff >= 3) {
         ST.backtestStats.gg.total++;
         if (goals.home > 0 && goals.away > 0) ST.backtestStats.gg.correct++;
@@ -535,7 +505,6 @@ button{border:none;background:none;cursor:pointer}
       }
     });
   }
-
   function updateBacktestDisplay() {
     const el = document.getElementById('backtestInfo');
     if (!el) return;
@@ -566,16 +535,13 @@ button{border:none;background:none;cursor:pointer}
   function mg13M1O(r){return r.ica>=300&&r.ica<=350&&r.varo>=30}
   function mg13AFF_C(r){const b=[];if(r.ich<=300)b.push({n:'ICH <= 300',p:2.5});else if(r.ich<=320)b.push({n:'ICH 301-320',p:2});else if(r.ich<=350)b.push({n:'ICH 321-350',p:1.5});else if(r.ich<=400)b.push({n:'ICH 351-400',p:.5});else b.push({n:'ICH > 400',p:0});if(r.varc>=40)b.push({n:'VarC >= 40%',p:2});else if(r.varc>=30)b.push({n:'VarC 30-39%',p:1.5});else if(r.varc>=20)b.push({n:'VarC 20-29%',p:.5});else b.push({n:'VarC < 20%',p:0});if(r.mgfc>=1.5&&r.mgfc<=2.5)b.push({n:'MGFC 1.5-2.5',p:1.5});else if(r.mgfc>=1&&r.mgfc<1.5)b.push({n:'MGFC 1.0-1.49',p:1});else if(r.mgfc>2.5&&r.mgfc<=3)b.push({n:'MGFC 2.51-3.0',p:.75});else b.push({n:'MGFC fuori range',p:0});if(r.vu5c>=60)b.push({n:'VU5C >= 60%',p:1});else if(r.vu5c>=40)b.push({n:'VU5C 40-59%',p:.5});else b.push({n:'VU5C < 40%',p:0});if(r.q1>=1.5&&r.q1<=2.5)b.push({n:'Q1 1.50-2.50',p:1});else if((r.q1>=1.2&&r.q1<1.5)||(r.q1>2.5&&r.q1<=4))b.push({n:'Q1 ok',p:.5});else b.push({n:'Q1 estrema',p:0});if(r.mgso>=1.5)b.push({n:'MGSO >= 1.5',p:1});else if(r.mgso>=1)b.push({n:'MGSO 1.0-1.49',p:.5});else b.push({n:'MGSO < 1.0',p:0});if(r.ritc>=3)b.push({n:'RitC >= 3',p:.75});else if(r.ritc>=1)b.push({n:'RitC 1-2',p:.25});else b.push({n:'RitC 0',p:0});const tot=b.reduce((s,x)=>s+x.p,0);return {breakdown:b,total:tot,aff:tot>=8?5:tot>=6.5?4:tot>=5?3:tot>=3.5?2:1,max:9.75};}
   function mg13AFF_O(r){const b=[];if(r.ica<=300)b.push({n:'ICA <= 300',p:2.5});else if(r.ica<=320)b.push({n:'ICA 301-320',p:2});else if(r.ica<=350)b.push({n:'ICA 321-350',p:1.5});else if(r.ica<=400)b.push({n:'ICA 351-400',p:.5});else b.push({n:'ICA > 400',p:0});if(r.varo>=40)b.push({n:'VarO >= 40%',p:2});else if(r.varo>=30)b.push({n:'VarO 30-39%',p:1.5});else if(r.varo>=20)b.push({n:'VarO 20-29%',p:.5});else b.push({n:'VarO < 20%',p:0});if(r.mgfo>=1.5&&r.mgfo<=2.5)b.push({n:'MGFO 1.5-2.5',p:1.5});else if(r.mgfo>=1&&r.mgfo<1.5)b.push({n:'MGFO 1.0-1.49',p:1});else if(r.mgfo>2.5&&r.mgfo<=3)b.push({n:'MGFO 2.51-3.0',p:.75});else b.push({n:'MGFO fuori range',p:0});if(r.vu5o>=60)b.push({n:'VU5O >= 60%',p:1});else if(r.vu5o>=40)b.push({n:'VU5O 40-59%',p:.5});else b.push({n:'VU5O < 40%',p:0});if(r.q2>=2&&r.q2<=4)b.push({n:'Q2 2.00-4.00',p:1});else if(r.q2>4&&r.q2<=6)b.push({n:'Q2 4.01-6.00',p:.5});else b.push({n:'Q2 estrema',p:0});if(r.mgsc>=1.5)b.push({n:'MGSC >= 1.5',p:1});else if(r.mgsc>=1)b.push({n:'MGSC 1.0-1.49',p:.5});else b.push({n:'MGSC < 1.0',p:0});if(r.rito>=3)b.push({n:'RitO >= 3',p:.75});else if(r.rito>=1)b.push({n:'RitO 1-2',p:.25});else b.push({n:'RitO 0',p:0});const tot=b.reduce((s,x)=>s+x.p,0);return {breakdown:b,total:tot,aff:tot>=8?5:tot>=6.5?4:tot>=5?3:tot>=3.5?2:1,max:9.75};}
-
   function scoreAmm(r){const b=[];if(r.amm>=.4)b.push({n:'Amm/p >= 0.40',p:3});else if(r.amm>=.3)b.push({n:'Amm/p 0.30-0.39',p:2.5});else if(r.amm>=.2)b.push({n:'Amm/p 0.20-0.29',p:1.5});else b.push({n:'Amm/p < 0.20',p:0});if(r.falli>=2.5)b.push({n:'Falli >= 2.5',p:2.5});else if(r.falli>=2)b.push({n:'Falli 2.0-2.49',p:2});else if(r.falli>=1.5)b.push({n:'Falli 1.5-1.99',p:1});else b.push({n:'Falli < 1.5',p:0});if(r.rit>=5)b.push({n:'Ritardo >= 5',p:2});else if(r.rit>=3)b.push({n:'Ritardo 3-4',p:1.5});else if(r.rit>=1)b.push({n:'Ritardo 1-2',p:.5});else b.push({n:'Ritardo 0',p:0});if(r.tackle>=2)b.push({n:'Tackle >= 2.0',p:1.5});else if(r.tackle>=1)b.push({n:'Tackle 1.0-1.99',p:.75});else b.push({n:'Tackle < 1.0',p:0});if(r.min>=70)b.push({n:'Minuti >= 70',p:.5});else b.push({n:'Minuti < 70',p:0});const tot=b.reduce((s,x)=>s+x.p,0);return {breakdown:b,total:tot,max:9.5,level:tot>=7?'hot':tot>=5?'warm':'mild'};}
   function scoreGol(r){const b=[];if(r.gol>=.4)b.push({n:'Gol/p >= 0.40',p:3});else if(r.gol>=.25)b.push({n:'Gol/p 0.25-0.39',p:2});else if(r.gol>=.15)b.push({n:'Gol/p 0.15-0.24',p:1});else b.push({n:'Gol/p < 0.15',p:0});if(r.tiriPorta>=2)b.push({n:'TiP >= 2.0',p:2.5});else if(r.tiriPorta>=1.5)b.push({n:'TiP 1.5-1.99',p:1.5});else if(r.tiriPorta>=1)b.push({n:'TiP 1.0-1.49',p:1});else b.push({n:'TiP < 1.0',p:0});if(r.rit>=5)b.push({n:'Ritardo >= 5',p:2});else if(r.rit>=3)b.push({n:'Ritardo 3-4',p:1.5});else if(r.rit>=1)b.push({n:'Ritardo 1-2',p:.5});else b.push({n:'Ritardo 0',p:0});if(r.tiriTot>=3)b.push({n:'TT >= 3.0',p:1.5});else if(r.tiriTot>=2)b.push({n:'TT 2.0-2.99',p:1});else b.push({n:'TT < 2.0',p:0});if(r.min>=70)b.push({n:'Minuti >= 70',p:.5});else b.push({n:'Minuti < 70',p:0});const tot=b.reduce((s,x)=>s+x.p,0);return {breakdown:b,total:tot,max:9.5,level:tot>=7?'hot':tot>=5?'warm':'mild'};}
 
-  // ==================== HUB ADVICE (MODIFICATA PER TOP+) ====================
+  // ==================== HUB ADVICE ====================
   function hubAdvice(h){
     const tips=[];
-    // Valuta se la partita ha i requisiti per TOP+
     const hasTopPlusPotential = h.coverage >= 4 && h.conflicts === 0 && h.dm && h.dm.np >= 40;
-    
     if(h.o25&&h.o25.aff>=4&&h.gzOver&&h.qvForGoals) {
       const tier = hasTopPlusPotential ? 'TOP+' : 'TOP';
       tips.push({market:'Ov 2.5', tier, score:(h.o25?.score||0)+(h.conv||0)+(hasTopPlusPotential?0.5:0), reason:'IGBt e MGE forti con conferma GZ over e 1X2 coerente'});
@@ -777,7 +743,6 @@ button{border:none;background:none;cursor:pointer}
     if (ST.mg13.length) {
       rows = ST.mg13.map(r => {
         const house = mg13AFF_C(r), away = mg13AFF_O(r);
-        const useHouse = ST.detSide==='ospite'?false:ST.sub!=='ospite';
         const aff = ST.sub==='ospite'?away.aff:house.aff;
         const dm = getDataMiningForMatch(r.evento);
         const dmFactor = getDMFactor(dm, 'mg13');
@@ -802,7 +767,6 @@ button{border:none;background:none;cursor:pointer}
   function getQuoteRows(){let rows=ST.quoteValore.map(r=>{const a=analyzeQuoteMatch(r);return {...r,score:a.score,...a};});if(ST.quoteFilter!=='all')rows=rows.filter(r=>r.golSide===ST.quoteFilter);rows=filt(rows);return ST.sortMode==='time'?[...rows].sort(sortTime):[...rows].sort((a,b)=>b.score-a.score||sortTime(a,b));}
   function getGzRows(){let rows=ST.gz.map(r=>({...r,prob:gzProbability(r.gz),score:Math.abs(r.gz||0)}));if(ST.gzFilter!=='all')rows=rows.filter(r=>r.prob.type===ST.gzFilter);rows=filtLeague(rows,'lega');if(ST.gzSort==='time'||ST.sortMode==='time')return [...rows].sort(sortTime);return [...rows].sort((a,b)=>Math.abs(b.gz||0)-Math.abs(a.gz||0)||sortTime(a,b));}
   function getGeneralRows(){const rows=[];getOv05Rows().slice(0,5).forEach(r=>rows.push({ora:r.ora,evento:r.evento,market:'Ov 0.5PT',score:r.score,aff:r.aff,source:r,advice:r.aff>=4?'Linea prudente con buon supporto':'Segnale da confermare'}));getGgRows().slice(0,5).forEach(r=>rows.push({ora:r.ora,evento:r.evento,market:'GG',score:r.score,aff:r.aff,source:r,advice:r.gzAlign?.aligned&&r.qvAlign&&marketSupportsQuote('gg',r.qvAlign)?'GG sostenuto da GZ e 1X2':'GG interessante ma non pienamente convergente'}));getO25Rows().slice(0,5).forEach(r=>rows.push({ora:r.ora,evento:r.evento,market:'Ov 2.5',score:r.score,aff:r.aff,source:r,advice:r.gzAlign?.aligned?'Over supportato da GZ':'Over da verificare con le quote'}));getU25Rows().slice(0,5).forEach(r=>rows.push({ora:r.ora,evento:r.evento,market:'U 2.5',score:r.score,aff:r.aff,source:r,advice:r.gzAlign?.aligned?'Under coerente con GZ':'Under senza conferma piena'}));getMgRows().slice(0,5).forEach(r=>rows.push({ora:r.ora,evento:r.evento,market:'MG 1-3',score:Math.max(r.house.total,r.away.total),aff:Math.max(r.house.aff,r.away.aff),source:r,advice:'Mercato smart utile per match equilibrati'}));getIaRows().slice(0,5).forEach(r=>rows.push({ora:r.ora,evento:r.evento,market:'Stats IA',score:r.score,aff:r.aff,source:r,advice:'Supporto statistico accessorio'}));buildHubMatchMap().slice(0,5).forEach(r=>{if(r.advice.main)rows.push({ora:r.ora,evento:r.evento,market:'Pronostico finale',score:r.score,aff:r.aff,source:r,advice:r.advice.summary});});rows.sort((a,b)=>b.score-a.score||sortTime(a,b));return filt(rows);}
-
   function getDataMiningRows(){
     let rows = ST.dataMining.map(dm => ({...dm, score: dm.np}));
     rows = filt(rows);
@@ -916,10 +880,49 @@ button{border:none;background:none;cursor:pointer}
     const leagueKey=ST.market==='gg'||ST.market==='o25'||ST.market==='u25'?'lega':ST.market==='ia'?'lega':ST.market==='players'?'lega':ST.market==='gz'?'lega':null;
     const leagues=leagueKey?getLeagueOptions(base,leagueKey):[];
     let stabs='';
+    if(ST.market==='combo') {
+  const rows = getComboRows();
+  const stabs = `<div class="stabs"><button class="stab ${ST.sortMode==='score'?'active':''}" data-sort="score">📊 Score</button><button class="stab ${ST.sortMode==='time'?'active':''}" data-sort="time">⏰ Orario</button></div>`;
+  document.getElementById('controls').innerHTML = `${stabs}<div class="toolbar"><input class="search" id="searchIn" placeholder="Cerca partita..." value="${escapeHtml(ST.q)}"><button class="pdf-btn" id="pdfBtn">${svgPDF}<span>Scarica PDF</span></button></div><div class="status">Partite trovate: <strong>${rows.length}</strong></div><div id="uploadStatus" class="up-status"></div>`;
+  return;
+}
+if(ST.market==='performance') {
+  // I controlli non servono, la vista è già renderizzata
+  document.getElementById('controls').innerHTML = `<div class="toolbar"><button class="pdf-btn" id="pdfBtn">${svgPDF}<span>Scarica PDF (Performance)</span></button></div>`;
+  return;
+}
     if(ST.market==='storico'){
       const sum=historySummary(ST.history||[]);
       const cats=['all',...sum.cats.map(x=>x.cat)];
-      document.getElementById('controls').innerHTML=`<div class="stabs"><button class="stab ${ST.histStatus==='all'?'active':''}" data-hstatus="all">Tutti</button><button class="stab ${ST.histStatus==='pending'?'active':''}" data-hstatus="pending">In attesa</button><button class="stab ${ST.histStatus==='won'?'active':''}" data-hstatus="won">Vinte</button><button class="stab ${ST.histStatus==='lost'?'active':''}" data-hstatus="lost">Perse</button><button class="stab ${ST.sortMode==='score'?'active':''}" data-sort="score">📊 Recenti</button><button class="stab ${ST.sortMode==='time'?'active':''}" data-sort="time">⏰ Orario</button></div><div class="toolbar"><input class="search" id="searchIn" placeholder="Cerca match o categoria" value="${escapeHtml(ST.q||'')}"><select class="select" id="histCatSel">${cats.map(c=>`<option value="${escapeHtml(c)}" ${ST.histCategory===c?'selected':''}>${c==='all'?'Tutte le categorie':escapeHtml(c)}</option>`).join('')}</select><button class="btn ghost" id="histExportBtn">Esporta storico</button><button class="btn ghost" id="histClearResolved">Pulisci concluse</button><button class="btn ghost danger" id="histClearAllBtn">Cancella tutto</button></div><div class="status">Storico: <strong>${sum.tot}</strong> pick • Vinte ${sum.win} • Perse ${sum.loss} • Pending ${sum.pending} • % vinte ${fmt(sum.winPct,1)}%</div>`;
+      // Usa chip
+      const statusChips = ['all','pending','won','lost'].map(s => `
+        <div class="chip ${ST.histStatus === s ? 'active' : ''}" data-hstatus="${s}">
+          ${s === 'all' ? '📋 Tutti' : s === 'pending' ? '⏳ In attesa' : s === 'won' ? '✅ Vinte' : '❌ Perse'}
+        </div>
+      `).join('');
+      const catChips = cats.map(c => `
+        <div class="chip ${ST.histCategory === c ? 'active' : ''}" data-hcat="${c}">
+          ${c === 'all' ? '📂 Tutte le cat.' : escapeHtml(c)}
+        </div>
+      `).join('');
+      const sortChips = `
+        <div class="chip ${ST.sortMode === 'score' ? 'active' : ''}" data-sort="score">📊 Recenti</div>
+        <div class="chip ${ST.sortMode === 'time' ? 'active' : ''}" data-sort="time">⏰ Orario</div>
+      `;
+      document.getElementById('controls').innerHTML = `
+        <div class="filter-chips">${statusChips}</div>
+        <div class="filter-chips">${catChips}</div>
+        <div class="toolbar" style="justify-content: space-between;">
+          <input class="search" id="searchIn" placeholder="Cerca match o categoria" value="${escapeHtml(ST.q)}">
+          <div style="display: flex; gap: 8px;">${sortChips}</div>
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 12px;">
+          <button class="btn ghost" id="histExportBtn">📎 Esporta</button>
+          <button class="btn ghost" id="histClearResolved">🧹 Pulisci concluse</button>
+          <button class="btn ghost danger" id="histClearAllBtn">🗑 Cancella tutto</button>
+        </div>
+        <div class="status" style="margin-top: 12px;">Storico: <strong>${sum.tot}</strong> pick • Vinte ${sum.win} • Perse ${sum.loss} • Pending ${sum.pending} • % vinte ${fmt(sum.winPct,1)}%</div>
+      `;
       return;
     }
     if(ST.market==='datamining'){
@@ -955,42 +958,41 @@ button{border:none;background:none;cursor:pointer}
   function renderRows(){
     const rows=currentRows();
     const main=document.getElementById('main');
-if(ST.market==='storico'){
-  const sum = historySummary(ST.history||[]);
-  const cats = ['all', ...sum.cats.map(x=>x.cat)];
-  // Chip per status
-  const statusChips = ['all','pending','won','lost'].map(s => `
-    <div class="chip ${ST.histStatus === s ? 'active' : ''}" data-hstatus="${s}">
-      ${s === 'all' ? '📋 Tutti' : s === 'pending' ? '⏳ In attesa' : s === 'won' ? '✅ Vinte' : '❌ Perse'}
-    </div>
-  `).join('');
-  // Chip per categoria
-  const catChips = cats.map(c => `
-    <div class="chip ${ST.histCategory === c ? 'active' : ''}" data-hcat="${c}">
-      ${c === 'all' ? '📂 Tutte le cat.' : escapeHtml(c)}
-    </div>
-  `).join('');
-  // Chip per ordinamento
-  const sortChips = `
-    <div class="chip ${ST.sortMode === 'score' ? 'active' : ''}" data-sort="score">📊 Recenti</div>
-    <div class="chip ${ST.sortMode === 'time' ? 'active' : ''}" data-sort="time">⏰ Orario</div>
-  `;
-  document.getElementById('controls').innerHTML = `
-    <div class="filter-chips">${statusChips}</div>
-    <div class="filter-chips">${catChips}</div>
-    <div class="toolbar" style="justify-content: space-between;">
-      <input class="search" id="searchIn" placeholder="Cerca match o categoria" value="${escapeHtml(ST.q)}">
-      <div style="display: flex; gap: 8px;">${sortChips}</div>
-    </div>
-    <div style="display: flex; gap: 8px; margin-top: 12px;">
-      <button class="btn ghost" id="histExportBtn">📎 Esporta</button>
-      <button class="btn ghost" id="histClearResolved">🧹 Pulisci concluse</button>
-      <button class="btn ghost danger" id="histClearAllBtn">🗑 Cancella tutto</button>
-    </div>
-    <div class="status" style="margin-top: 12px;">Storico: <strong>${sum.tot}</strong> pick • Vinte ${sum.win} • Perse ${sum.loss} • Pending ${sum.pending} • % vinte ${fmt(sum.winPct,1)}%</div>
-  `;
-  return;
-}
+    if(ST.market==='storico'){
+      const sum = historySummary(ST.history||[]);
+      const cats = ['all', ...sum.cats.map(x=>x.cat)];
+      const statusChips = ['all','pending','won','lost'].map(s => `
+        <div class="chip ${ST.histStatus === s ? 'active' : ''}" data-hstatus="${s}">
+          ${s === 'all' ? '📋 Tutti' : s === 'pending' ? '⏳ In attesa' : s === 'won' ? '✅ Vinte' : '❌ Perse'}
+        </div>
+      `).join('');
+      const catChips = cats.map(c => `
+        <div class="chip ${ST.histCategory === c ? 'active' : ''}" data-hcat="${c}">
+          ${c === 'all' ? '📂 Tutte le cat.' : escapeHtml(c)}
+        </div>
+      `).join('');
+      const sortChips = `
+        <div class="chip ${ST.sortMode === 'score' ? 'active' : ''}" data-sort="score">📊 Recenti</div>
+        <div class="chip ${ST.sortMode === 'time' ? 'active' : ''}" data-sort="time">⏰ Orario</div>
+      `;
+      document.getElementById('controls').innerHTML = `
+        <div class="filter-chips">${statusChips}</div>
+        <div class="filter-chips">${catChips}</div>
+        <div class="toolbar" style="justify-content: space-between;">
+          <input class="search" id="searchIn" placeholder="Cerca match o categoria" value="${escapeHtml(ST.q)}">
+          <div style="display: flex; gap: 8px;">${sortChips}</div>
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 12px;">
+          <button class="btn ghost" id="histExportBtn">📎 Esporta</button>
+          <button class="btn ghost" id="histClearResolved">🧹 Pulisci concluse</button>
+          <button class="btn ghost danger" id="histClearAllBtn">🗑 Cancella tutto</button>
+        </div>
+        <div class="status" style="margin-top: 12px;">Storico: <strong>${sum.tot}</strong> pick • Vinte ${sum.win} • Perse ${sum.loss} • Pending ${sum.pending} • % vinte ${fmt(sum.winPct,1)}%</div>
+      `;
+      if(!rows.length){main.innerHTML=`<div class="empty"><div class="ico">🧾</div><p>Aggiungi i pronostici dalle sezioni dell'app e aggiorna poi manualmente esito vinta o persa.</p></div>`;return;}
+      main.innerHTML=`<div class="mlist">${rows.map(r=>renderStoricoRow(r)).join('')}</div>`;
+      return;
+    }
     if(ST.market==='datamining'){
       if(!rows.length){main.innerHTML=`<div class="sec"><div class="tag tag-dm">📊 DataMining</div><div class="sec-ct">Nessun dato</div></div><div class="empty"><div class="ico">📂</div><p>Carica il file DataMining Plus per visualizzare le partite.</p></div>`;return;}
       const list = rows.map((r,i) => {
@@ -1022,11 +1024,49 @@ if(ST.market==='storico'){
     main.innerHTML=`<div class="sec"><div class="tag ${cls}">${lbl}</div><div class="sec-ct">${rows.length} elementi</div></div><div class="mlist">${list}</div>`;
   }
 
-  function renderRow(r,i){
-    if(ST.market==='storico') return renderStoricoRow(r);
-    if(ST.market==='datamining'){
+  function renderRows(){
+  // 1) Combo Finder
+  if(ST.market === 'combo'){
+    const rows = getComboRows();
+    const main = document.getElementById('main');
+    if(!rows.length){
+      main.innerHTML = `<div class="empty"><div class="ico">🔗</div><p>Nessuna combo trovata. Carica più dataset (Ov0.5, GG, O/U, MG, GZ, Quote, DM).</p></div>`;
+      return;
+    }
+    const list = rows.map((r,i) => renderComboRow(r,i)).join('');
+    main.innerHTML = `<div class="sec"><div class="tag tag-mg">Combo Finder</div><div class="sec-ct">${rows.length} partite</div></div><div class="mlist">${list}</div>`;
+    return;
+  }
+  
+  // 2) Performance
+  if(ST.market === 'performance'){
+    renderPerformanceView();
+    return;
+  }
+  
+  // 3) Storico (già con chip)
+  if(ST.market === 'storico'){
+    const rows = getHistoryRows();
+    const main = document.getElementById('main');
+    if(!rows.length){
+      main.innerHTML = `<div class="empty"><div class="ico">🧾</div><p>Aggiungi i pronostici dalle sezioni dell'app.</p></div>`;
+      return;
+    }
+    main.innerHTML = `<div class="mlist">${rows.map(r=>renderStoricoRow(r)).join('')}</div>`;
+    return;
+  }
+  
+  // 4) DataMining
+  if(ST.market === 'datamining'){
+    const rows = getDataMiningRows();
+    const main = document.getElementById('main');
+    if(!rows.length){
+      main.innerHTML = `<div class="empty"><div class="ico">📂</div><p>Carica il file DataMining Plus.</p></div>`;
+      return;
+    }
+    const list = rows.map((r,i) => {
       const npBadge = r.np >= 30 ? 'good' : r.np >= 15 ? 'warn' : 'neu';
-      let html = `<div class="mrow" ${rowOpenAttr(i)}>
+      return `<div class="mrow" data-open="${i}">
         <div class="m-ora">${escapeHtml(r.ora||'--:--')}</div>
         <div>
           <div class="m-name">${escapeHtml(r.match)}</div>
@@ -1042,42 +1082,28 @@ if(ST.market==='storico'){
           <div class="m-ind ${r.pOV25 > 50 ? 'ind-g' : r.pOV25 > 40 ? 'ind-o' : 'ind-r'}">${r.pOV25.toFixed(0)}%</div>
         </div>
       </div>`;
-      return html + `<div class="pickbar"><button class="pickbtn" data-addpick="${i}">➕ Aggiungi allo storico</button></div>`;
-    }
-    let html='';
-    const boosted = r.dm && r.originalAff && r.aff > r.originalAff;
-    const affDisplay = boosted ? `<span>${affBadge(r.aff)} <span class="boost-indicator">⬆️</span></span>` : affBadge(r.aff);
-    if(ST.market==='ov05'){
-      const dmBadge = dmBadgeHtml(r.dm, 'ov05');
-      const valueBadge = valueBadgeHtml(r.dm, 'ov05');
-      html=`<div class="mrow" ${rowOpenAttr(i)}><div class="m-ora">${escapeHtml(r.ora||'--:--')}</div><div><div class="m-name">${escapeHtml(r.evento)}</div><div class="m-sub">${r.m1?'<span class="badge good">M1</span>':''}${r.gzAlign?`<span class="badge ${r.gzAlign.aligned?'good':'neu'}">GZ ${escapeHtml(r.gzAlign.prob.label)}</span>`:''}${r.qvAlign&&marketSupportsQuote('ov05',r.qvAlign)?`<span class="badge alt">1X2 ${escapeHtml(r.qvAlign.golSide)}</span>`:''}${dmBadge}${valueBadge}</div></div><div class="m-right">${affDisplay}${r.ind?indB(r.ind,'ov05'):r.dm?`<div class="m-ind ${r.dm.ic<=320?'ind-g':r.dm.ic<=340?'ind-o':'ind-r'}">${r.dm.ic}</div>`:''}</div></div>`;
-    } else if(['gg','o25','u25'].includes(ST.market)){
-      const dmBadge = dmBadgeHtml(r.dm, ST.market);
-      const valueBadge = valueBadgeHtml(r.dm, ST.market);
-      const indVal = ST.market==='gg'? (r.igbt||r.dm?.igbt) : (r.igbt||r.dm?.igbt);
-      html=`<div class="mrow" ${rowOpenAttr(i)}><div class="m-ora">${escapeHtml(r.ora||'--:--')}</div><div><div class="m-name">${escapeHtml(r.evento)}</div><div class="m-sub"><span>${escapeHtml(r.lega||r.nazione||'')}</span>${r.m1?'<span class="badge good">M1</span>':''}${r.gzAlign?`<span class="badge ${r.gzAlign.aligned?'good':'neu'}">GZ ${escapeHtml(r.gzAlign.prob.label)}</span>`:''}${dmBadge}${valueBadge}</div></div><div class="m-right">${affDisplay}${indB(indVal,'igbt')}</div></div>`;
-    } else if(ST.market==='mg13'){
-      const side=ST.sub==='ospite'?'O':'C';
-      const showAff=ST.sub==='ospite'?r.away.aff:r.house.aff;
-      const ind=ST.sub==='ospite'?r.ica:r.ich;
-      const dm = r.dm;
-      const dmStrength = dm && dm.np >= 30 ? 'dm-green' : (dm && dm.np >= 15 ? 'dm-yellow' : 'dm-red');
-      const dmBadge = dm ? `<span class="badge ${dmStrength}" title="NP=${dm.np}">📊 MGE:${dm.mge.toFixed(2)} DIFF:${dm.diff.toFixed(2)} NP:${dm.np}</span>` : '';
-      const mg24Badge = dm && isMG24(dm) ? `<span class="badge alt">🔥 MG 2-4 (1.50)</span>` : '';
-      html=`<div class="mrow" ${rowOpenAttr(i)}><div class="m-ora">${escapeHtml(r.ora||'--:--')}</div><div><div class="m-name">${escapeHtml(r.evento)}</div><div class="m-sub"><span class="badge alt">${ST.sub==='ospite'?'Ospite':'Casa / Mix'}</span>${r.m1c?'<span class="badge good">M1 C</span>':''}${r.m1o?'<span class="badge info">M1 O</span>':''}${dmBadge}${mg24Badge}</div></div><div class="m-right">${affDisplay}${ind?indB(ind,'mg'):dm?`<div class="m-ind ${dm.mge>=3?'ind-g':dm.mge>=2.5?'ind-o':'ind-r'}">${dm.mge.toFixed(1)}</div>`:''}</div></div>`;
-    } else if(ST.market==='ia') html=`<div class="mrow" ${rowOpenAttr(i)}><div class="m-ora">${escapeHtml(r.ora||'--:--')}</div><div><div class="m-name">${escapeHtml(r.evento)}</div><div class="m-sub"><span>${escapeHtml(r.lega||'')}</span>${r.stats.slice(0,3).map(s=>`<span class="badge ${s.aff>=3?'good':s.aff>=2?'warn':'neu'}">${escapeHtml(s.key)} ${escapeHtml(s.pred)}</span>`).join('')}</div></div><div class="m-right">${affBadge(r.aff)}<div class="m-ind ind-r">${fmt(r.avgAff,1)}</div></div></div>`;
-    else if(ST.market==='players') html=`<div class="mrow" ${rowOpenAttr(i)}><div class="m-ora">${escapeHtml(r.ora||'--:--')}</div><div><div class="m-name">${escapeHtml(r.nome)}</div><div class="m-sub"><span>${escapeHtml(r.squadra||'')}</span><span>${escapeHtml(r.partita||'')}</span></div></div><div class="m-right">${affBadge(r.aff)}<div class="m-ind ${r.level==='hot'?'ind-g':r.level==='warm'?'ind-o':'ind-r'}">${fmt(r.score,1)}</div></div></div>`;
-    else if(ST.market==='quote') html=`<div class="mrow" ${rowOpenAttr(i)}><div class="m-ora">${escapeHtml(r.ora||'--:--')}</div><div><div class="m-name">${escapeHtml(r.match)}</div><div class="m-sub">${r.value1?'<span class="badge good">1 value</span>':''}${r.valueX?'<span class="badge warn">X value</span>':''}${r.value2?'<span class="badge info">2 value</span>':''}${r.golSide?`<span class="badge alt">${escapeHtml(r.golSide)}</span>`:''}</div></div><div class="m-right"><div class="m-ind ${r.score>=0.8?'ind-g':r.score>=0.35?'ind-o':'ind-r'}">${fmt(r.score,2)}</div></div></div>`;
-    else if(ST.market==='gz') html=`<div class="mrow" ${rowOpenAttr(i)}><div class="m-ora">${escapeHtml(r.ora||'--:--')}</div><div><div class="m-name">${escapeHtml(r.evento)}</div><div class="m-sub"><span>${escapeHtml(r.lega||'')}</span><span class="badge ${r.prob.type==='over'?'good':r.prob.type==='under'?'warn':'neu'}">${escapeHtml(r.prob.label)}</span></div></div><div class="m-right"><div class="m-ind ${Math.abs(r.gz||0)>=5000?'ind-g':Math.abs(r.gz||0)>=1200?'ind-o':'ind-r'}">${fmt(r.gz,0)}</div></div></div>`;
-    else if(ST.market==='gen') html=`<div class="mrow" ${rowOpenAttr(i)}><div class="m-ora">${escapeHtml(r.ora||'--:--')}</div><div><div class="m-name">${escapeHtml(r.evento)}</div><div class="m-sub"><span class="badge alt">${escapeHtml(r.market)}</span><span>${escapeHtml(r.advice||'')}</span></div></div><div class="m-right">${affBadge(r.aff||3)}<div class="m-ind ind-g">${fmt(r.score,1)}</div></div></div>`;
-    else if(ST.market==='hub'){
-      const dm = r.dm;
-      const dmBadge = dm ? `<span class="badge info" title="NP=${dm.np}">📊 DM: ${dm.np} partite</span>` : '';
-      const topPlusBadge = r.advice.main?.tier === 'TOP+' ? `<span class="badge top-plus">🏆 TOP+</span>` : '';
-      html=`<div class="mrow" ${rowOpenAttr(i)}><div class="m-ora">${escapeHtml(r.ora||'--:--')}</div><div><div class="m-name">${escapeHtml(r.evento)}</div><div class="m-sub">${r.advice.main?`<span class="badge good">${escapeHtml(r.advice.main.market)}</span>`:''}${r.gzOver?'<span class="badge good">GZ over</span>':''}${r.gzUnder?'<span class="badge warn">GZ under</span>':''}${r.qvForGoals?'<span class="badge alt">1X2 gol</span>':''}${r.qvTight?'<span class="badge info">1X2 draw</span>':''}${dmBadge}${topPlusBadge}<span>${escapeHtml(r.advice.summary)}</span></div></div><div class="m-right">${affBadge(r.aff||3)}<div class="m-ind ${r.conflicts===0?'ind-g':r.conflicts===1?'ind-o':'ind-r'}">${fmt(r.score,1)}</div></div></div>`;
-    }
-    return html + `<div class="pickbar"><button class="pickbtn" data-addpick="${i}">➕ Aggiungi allo storico</button></div>`;
+    }).join('');
+    main.innerHTML = `<div class="sec"><div class="tag tag-dm">📊 DataMining Plus</div><div class="sec-ct">${rows.length} partite</div></div><div class="mlist">${list}</div>`;
+    return;
   }
+  
+  // 5) Tutti gli altri mercati (ov05, gg, o25, u25, mg13, ia, players, quote, gz, gen, hub)
+  const rows = currentRows();
+  const main = document.getElementById('main');
+  const headerMap = {
+    ov05:['tag-m1','Ov 0.5 PT'], gg:['tag-a','GG'], o25:['tag-gen','Ov 2.5'],
+    u25:['tag-b','U 2.5'], mg13:['tag-mg','MG 1-3'], ia:['tag-ia','Stats IA'],
+    players:['tag-a','Giocatori'], quote:['tag-mg','Quote 1X2'], gz:['tag-gz','GZ Index'],
+    gen:['tag-gen','Generale'], hub:['tag-ia','Match Hub']
+  };
+  const [cls,lbl] = headerMap[ST.market] || ['tag-gen','Analisi'];
+  if(!rows.length){
+    main.innerHTML = `<div class="sec"><div class="tag ${cls}">${lbl}</div><div class="sec-ct">Nessun dato disponibile</div></div><div class="empty"><div class="ico">📂</div><p>Carica il CSV corretto o modifica i filtri.</p></div>`;
+    return;
+  }
+  const list = rows.map((r,i) => renderRow(r,i)).join('');
+  main.innerHTML = `<div class="sec"><div class="tag ${cls}">${lbl}</div><div class="sec-ct">${rows.length} elementi</div></div><div class="mlist">${list}</div>`;
+}
 
   // ==================== BARRE DI PROBABILITÀ PER RISULTATI ESATTI ====================
   function renderExactScoresWithBars(reString) {
@@ -1278,436 +1304,241 @@ if(ST.market==='storico'){
     document.querySelectorAll('input[type="file"][data-target]').forEach(inp=>{inp.onchange=()=>handleUploadInput(inp);});
   }
 
-  // ==================== EVENT LISTENERS E INIZIALIZZAZIONE ====================
-  function bindStatic(){
-document.getElementById('mtabs').addEventListener('click', e => {
-  const b = e.target.closest('.mtab, .mtab-grid');
-  if (!b) return;
-  ST.market = b.dataset.m;
-  ST.q = '';
-  ST.league = 'all';
-  render();
-});
-    document.addEventListener('keydown',e=>{if(e.key==='Escape'&&ST.det)closeDetail();});
-    document.getElementById('datasetToggle').addEventListener('click',()=>{
-      const panel=document.getElementById('datasetPanel');
-      const arrow=document.getElementById('toggleArrow');
-      panel.classList.toggle('open');
-      arrow.textContent=panel.classList.contains('open')?'▲':'▼';
-    });
-    document.body.addEventListener('click',e=>{
-      const pick=e.target.closest('[data-pick]');
-      const clear=e.target.closest('[data-clear]');
-      const sub=e.target.closest('[data-sub]');
-      const iacat=e.target.closest('[data-iacat]');
-      const plsub=e.target.closest('[data-plsub]');
-      const sort=e.target.closest('[data-sort]');
-      const qf=e.target.closest('[data-qfilter]');
-      const gzf=e.target.closest('[data-gzfilter]');
-      const gzs=e.target.closest('[data-gzsort]');
-      const open=e.target.closest('[data-open]');
-      const add=e.target.closest('[data-addpick]');
-      const hs=e.target.closest('[data-hset]');
-      const hd=e.target.closest('[data-hdel]');
-      const hst=e.target.closest('[data-hstatus]');
-      const clr=e.target.closest('#histClearResolved');
-      const clrAll=e.target.closest('#histClearAllBtn');
-      const exp=e.target.closest('#histExportBtn');
-      if(pick){const inp=document.getElementById(pick.dataset.pick); if(inp) inp.click(); return;}
-      if(clear){clearDatasetState(clear.dataset.clear); ST[clear.dataset.clear]=[]; if(clear.dataset.clear==='plCards'&&ST.plSub==='cards')ST.plSub='shots'; if(clear.dataset.clear==='plShots'&&ST.plSub==='shots')ST.plSub='cards'; setUploadStatus('Dataset resettato.'); render(); return;}
-      if(sub){ST.sub=sub.dataset.sub; render(); return;}
-      if(iacat){ST.iaCat=iacat.dataset.iacat; render(); return;}
-      if(plsub){ST.plSub=plsub.dataset.plsub; render(); return;}
-      if(sort){ST.sortMode=sort.dataset.sort; if(ST.market==='gz')ST.gzSort=sort.dataset.sort==='time'?'time':'value'; render(); return;}
-      if(qf){ST.quoteFilter=qf.dataset.qfilter; render(); return;}
-      if(gzf){ST.gzFilter=gzf.dataset.gzfilter; render(); return;}
-      if(gzs){ST.gzSort=gzs.dataset.gzsort; ST.sortMode=gzs.dataset.gzsort==='time'?'time':'score'; render(); return;}
-      if(open){openDetail(parseInt(open.dataset.open,10)); return;}
-      if(add){ const rows=currentRows(); const r=rows[parseInt(add.dataset.addpick,10)]; if(r) addPickToHistory(r,ST.market); return; }
-      if(hs){ setHistoryStatus(hs.dataset.hset,hs.dataset.val); return; }
-      if(hd){ removeHistoryItem(hd.dataset.hdel); return; }
-      if(hst){ ST.histStatus=hst.dataset.hstatus; render(); return; }
-      if(e.target.closest('[data-hcat]')) {
-  ST.histCategory = e.target.closest('[data-hcat]').dataset.hcat;
-  render();
-  return;
-}
-      if(clr){ clearHistoryResolved(); return; }
-      if(clrAll){ clearAllHistory(); return; }
-      if(exp){ exportHistory(); return; }
-    });
-    document.body.addEventListener('keydown',e=>{const row=e.target.closest('[data-open]'); if(row&&(e.key==='Enter'||e.key===' ')){e.preventDefault(); openDetail(parseInt(row.dataset.open,10));}});
-    document.body.addEventListener('change',e=>{ if(e.target.id==='leagueSel'){ST.league=e.target.value; render();} if(e.target.id==='histCatSel'){ST.histCategory=e.target.value; render();} });
-    document.body.addEventListener('input',e=>{if(e.target.id==='searchIn'){ST.q=e.target.value.trim(); renderRows(); buildControls(); const s=document.getElementById('searchIn'); if(s) s.focus(); s?.setSelectionRange(ST.q.length,ST.q.length);}});
-    document.body.addEventListener('click',e=>{if(e.target.id==='pdfBtn')downloadPdf();});
+  // ==================== COMBO FINDER ====================
+  function addComboTab() {
+    // handled by upgradeMenuToGrid
   }
-
-  function render(){
-    document.querySelectorAll('.mtab').forEach(b=>b.classList.toggle('active',b.dataset.m===ST.market));
-    const totals=DATASETS.reduce((s,d)=>s+(ST[d.key]?.length||0),0);
-    document.getElementById('hdrInfo').textContent=`Dataset caricati: ${totals} righe • Vista: ${document.querySelector('.mtab.active')?.textContent||''}`;
-    updateBacktestDisplay();
-    renderUploadGrid();
-    buildControls();
-    renderRows();
-  }
-// Converte il menu orizzontale scorrevole in una griglia di box
-function upgradeMenuToGrid() {
-  const oldTabs = document.getElementById('mtabs');
-  if (!oldTabs) return;
-  const grid = document.createElement('div');
-  grid.id = 'mtabs';
-  grid.className = 'mtabs-grid';
-  const btns = Array.from(oldTabs.querySelectorAll('.mtab'));
-  btns.forEach(btn => {
-    const newBtn = document.createElement('div');
-    newBtn.className = 'mtab-grid';
-    if (btn.classList.contains('active')) newBtn.classList.add('active');
-    newBtn.setAttribute('data-m', btn.getAttribute('data-m'));
-    newBtn.textContent = btn.textContent;
-    grid.appendChild(newBtn);
-  });
-  oldTabs.replaceWith(grid);
-}
-function initApp(){
-    restoreDatasets();
-    upgradeMenuToGrid();   // <-- nuova riga
-    bindStatic();
-    render();
-}
-
-// ==================== COMBO FINDER (Analisi incrociata) ====================
-function addComboTab() {
-  const mtabs = document.getElementById('mtabs');
-  if (mtabs && !document.querySelector('.mtab[data-m="combo"]')) {
-    const btn = document.createElement('button');
-    btn.className = 'mtab';
-    btn.setAttribute('data-m', 'combo');
-    btn.textContent = 'Combo Finder';
-    mtabs.appendChild(btn);
-  }
-}
-
-function buildComboMatches() {
-  const map = new Map();
-  function getMatch(evento, ora = '') {
-    const key = normName(evento);
-    if (!key) return null;
-    if (!map.has(key)) {
-      map.set(key, {
-        key, evento, ora,
-        markets: [], conflicts: 0, dm: null, gz: null, qv: null
+  function buildComboMatches() {
+    const map = new Map();
+    function getMatch(evento, ora = '') {
+      const key = normName(evento);
+      if (!key) return null;
+      if (!map.has(key)) {
+        map.set(key, { key, evento, ora, markets: [], conflicts: 0, dm: null, gz: null, qv: null });
+      }
+      return map.get(key);
+    }
+    getOv05Rows().forEach(r => { const m = getMatch(r.evento, r.ora); if (m && r.aff >= 3) m.markets.push({ type: 'Ov0.5PT', aff: r.aff, score: r.score, data: r }); });
+    getGgRows().forEach(r => { const m = getMatch(r.evento, r.ora); if (m && r.aff >= 3) m.markets.push({ type: 'GG', aff: r.aff, score: r.score, data: r }); });
+    getO25Rows().forEach(r => { const m = getMatch(r.evento, r.ora); if (m && r.aff >= 3) m.markets.push({ type: 'Ov2.5', aff: r.aff, score: r.score, data: r }); });
+    getU25Rows().forEach(r => { const m = getMatch(r.evento, r.ora); if (m && r.aff >= 3) m.markets.push({ type: 'U2.5', aff: r.aff, score: r.score, data: r }); });
+    getMgRows().forEach(r => { const m = getMatch(r.evento, r.ora); if (m) { const bestAff = Math.max(r.house.aff, r.away.aff); if (bestAff >= 3) m.markets.push({ type: 'MG1-3', aff: bestAff, score: Math.max(r.house.total, r.away.total), data: r }); } });
+    ST.gz.forEach(g => { const m = getMatch(g.evento, g.ora); if (m && g.gz && Math.abs(g.gz) > 1200) m.gz = { value: g.gz, prob: gzProbability(g.gz) }; });
+    ST.quoteValore.forEach(q => { const m = getMatch(q.match, q.ora); if (m) { const analysis = analyzeQuoteMatch(q); if (analysis.golSide) m.qv = { side: analysis.golSide, score: analysis.score }; } });
+    ST.dataMining.forEach(d => { const m = getMatch(d.match, d.ora); if (m && d.np >= 20) m.dm = d; });
+    const results = [];
+    for (const m of map.values()) {
+      let comboScore = 0, totalAff = 0, hasOverMarket = false, hasUnderMarket = false, hasGG = false;
+      for (const mk of m.markets) {
+        comboScore += mk.score;
+        totalAff += mk.aff;
+        if (mk.type === 'Ov2.5' || mk.type === 'Ov0.5PT') hasOverMarket = true;
+        if (mk.type === 'U2.5') hasUnderMarket = true;
+        if (mk.type === 'GG') hasGG = true;
+      }
+      const avgAff = m.markets.length ? totalAff / m.markets.length : 0;
+      let conflicts = 0;
+      if (m.gz) {
+        if (m.gz.prob.type === 'over' && hasUnderMarket) conflicts++;
+        if (m.gz.prob.type === 'under' && hasOverMarket) conflicts++;
+      }
+      if (m.qv && m.qv.side === 'pareggio' && hasGG) conflicts++;
+      let dmBonus = 0;
+      if (m.dm) {
+        if ((hasOverMarket || hasGG) && m.dm.pOV25 > 55) dmBonus += 0.5;
+        if (hasUnderMarket && m.dm.pUN35 > 60) dmBonus += 0.5;
+        if (m.dm.np >= 40) dmBonus += 0.5;
+      }
+      const finalScore = comboScore / Math.max(1, m.markets.length) + dmBonus - conflicts * 2;
+      let tier = 'WATCH';
+      if (m.markets.length >= 2 && avgAff >= 3.5 && conflicts === 0 && finalScore > 6) tier = 'TOP';
+      else if (m.markets.length >= 2 && avgAff >= 3 && conflicts <= 1) tier = 'GOOD';
+      results.push({
+        ...m,
+        marketsCount: m.markets.length,
+        avgAff, conflicts, comboScore: finalScore, tier, dmBonus,
+        score: finalScore,
+        aff: Math.min(5, Math.floor(avgAff + (dmBonus * 0.5) - conflicts * 0.5))
       });
     }
-    return map.get(key);
+    return results.sort((a,b) => b.comboScore - a.comboScore || sortTime(a,b));
   }
-  getOv05Rows().forEach(r => { const m = getMatch(r.evento, r.ora); if (m && r.aff >= 3) m.markets.push({ type: 'Ov0.5PT', aff: r.aff, score: r.score, data: r }); });
-  getGgRows().forEach(r => { const m = getMatch(r.evento, r.ora); if (m && r.aff >= 3) m.markets.push({ type: 'GG', aff: r.aff, score: r.score, data: r }); });
-  getO25Rows().forEach(r => { const m = getMatch(r.evento, r.ora); if (m && r.aff >= 3) m.markets.push({ type: 'Ov2.5', aff: r.aff, score: r.score, data: r }); });
-  getU25Rows().forEach(r => { const m = getMatch(r.evento, r.ora); if (m && r.aff >= 3) m.markets.push({ type: 'U2.5', aff: r.aff, score: r.score, data: r }); });
-  getMgRows().forEach(r => { const m = getMatch(r.evento, r.ora); if (m) { const bestAff = Math.max(r.house.aff, r.away.aff); if (bestAff >= 3) m.markets.push({ type: 'MG1-3', aff: bestAff, score: Math.max(r.house.total, r.away.total), data: r }); } });
-  ST.gz.forEach(g => { const m = getMatch(g.evento, g.ora); if (m && g.gz && Math.abs(g.gz) > 1200) m.gz = { value: g.gz, prob: gzProbability(g.gz) }; });
-  ST.quoteValore.forEach(q => { const m = getMatch(q.match, q.ora); if (m) { const analysis = analyzeQuoteMatch(q); if (analysis.golSide) m.qv = { side: analysis.golSide, score: analysis.score }; } });
-  ST.dataMining.forEach(d => { const m = getMatch(d.match, d.ora); if (m && d.np >= 20) m.dm = d; });
-
-  const results = [];
-  for (const m of map.values()) {
-    let comboScore = 0, totalAff = 0, hasOverMarket = false, hasUnderMarket = false, hasGG = false, hasMG = false;
-    for (const mk of m.markets) {
-      comboScore += mk.score;
-      totalAff += mk.aff;
-      if (mk.type === 'Ov2.5' || mk.type === 'Ov0.5PT') hasOverMarket = true;
-      if (mk.type === 'U2.5') hasUnderMarket = true;
-      if (mk.type === 'GG') hasGG = true;
-      if (mk.type === 'MG1-3') hasMG = true;
-    }
-    const avgAff = m.markets.length ? totalAff / m.markets.length : 0;
-    let conflicts = 0;
-    if (m.gz) {
-      if (m.gz.prob.type === 'over' && hasUnderMarket) conflicts++;
-      if (m.gz.prob.type === 'under' && hasOverMarket) conflicts++;
-    }
-    if (m.qv && m.qv.side === 'pareggio' && hasGG) conflicts++;
-    let dmBonus = 0;
-    if (m.dm) {
-      if ((hasOverMarket || hasGG) && m.dm.pOV25 > 55) dmBonus += 0.5;
-      if (hasUnderMarket && m.dm.pUN35 > 60) dmBonus += 0.5;
-      if (m.dm.np >= 40) dmBonus += 0.5;
-    }
-    const finalScore = comboScore / Math.max(1, m.markets.length) + dmBonus - conflicts * 2;
-    let tier = 'WATCH';
-    if (m.markets.length >= 2 && avgAff >= 3.5 && conflicts === 0 && finalScore > 6) tier = 'TOP';
-    else if (m.markets.length >= 2 && avgAff >= 3 && conflicts <= 1) tier = 'GOOD';
-    results.push({
-      ...m,
-      marketsCount: m.markets.length,
-      avgAff, conflicts, comboScore: finalScore, tier, dmBonus,
-      score: finalScore,
-      aff: Math.min(5, Math.floor(avgAff + (dmBonus * 0.5) - conflicts * 0.5))
-    });
+  function getComboRows() {
+    let rows = buildComboMatches();
+    rows = filt(rows);
+    if (ST.sortMode === 'time') rows.sort(sortTime);
+    else rows.sort((a,b) => b.comboScore - a.comboScore);
+    return rows;
   }
-  return results.sort((a,b) => b.comboScore - a.comboScore || sortTime(a,b));
-}
-
-function getComboRows() {
-  let rows = buildComboMatches();
-  rows = filt(rows);
-  if (ST.sortMode === 'time') rows.sort(sortTime);
-  else rows.sort((a,b) => b.comboScore - a.comboScore);
-  return rows;
-}
-
-function renderComboRow(r, i) {
-  const marketsStr = r.markets.map(m => `${m.type}(${m.aff})`).join(', ');
-  const tierClass = r.tier === 'TOP' ? 'top-plus' : (r.tier === 'GOOD' ? 'good' : 'neu');
-  const tierIcon = r.tier === 'TOP' ? '🏆' : (r.tier === 'GOOD' ? '✅' : '👀');
-  const conflictBadge = r.conflicts > 0 ? `<span class="badge warn">⚠️ ${r.conflicts} conflitto/i</span>` : '<span class="badge good">✔️ 0 conflitti</span>';
-  const dmBadge = r.dm ? `<span class="badge info">📊 NP:${r.dm.np}</span>` : '';
-  const gzBadge = r.gz ? `<span class="badge ${r.gz.prob.type === 'over' ? 'good' : 'warn'}">GZ ${r.gz.prob.label}</span>` : '';
-  const qvBadge = r.qv ? `<span class="badge alt">1X2 ${r.qv.side}</span>` : '';
-  return `<div class="mrow" data-open="${i}">
-    <div class="m-ora">${escapeHtml(r.ora || '--:--')}</div>
-    <div>
-      <div class="m-name">${escapeHtml(r.evento)}</div>
-      <div class="m-sub">
-        <span class="badge ${tierClass}">${tierIcon} ${r.tier}</span>
-        ${conflictBadge}
-        ${dmBadge} ${gzBadge} ${qvBadge}
-        <span>Mercati: ${marketsStr}</span>
+  function renderComboRow(r, i) {
+    const marketsStr = r.markets.map(m => `${m.type}(${m.aff})`).join(', ');
+    const tierClass = r.tier === 'TOP' ? 'top-plus' : (r.tier === 'GOOD' ? 'good' : 'neu');
+    const tierIcon = r.tier === 'TOP' ? '🏆' : (r.tier === 'GOOD' ? '✅' : '👀');
+    const conflictBadge = r.conflicts > 0 ? `<span class="badge warn">⚠️ ${r.conflicts} conflitto/i</span>` : '<span class="badge good">✔️ 0 conflitti</span>';
+    const dmBadge = r.dm ? `<span class="badge info">📊 NP:${r.dm.np}</span>` : '';
+    const gzBadge = r.gz ? `<span class="badge ${r.gz.prob.type === 'over' ? 'good' : 'warn'}">GZ ${r.gz.prob.label}</span>` : '';
+    const qvBadge = r.qv ? `<span class="badge alt">1X2 ${r.qv.side}</span>` : '';
+    return `<div class="mrow" data-open="${i}">
+      <div class="m-ora">${escapeHtml(r.ora || '--:--')}</div>
+      <div>
+        <div class="m-name">${escapeHtml(r.evento)}</div>
+        <div class="m-sub">
+          <span class="badge ${tierClass}">${tierIcon} ${r.tier}</span>
+          ${conflictBadge}
+          ${dmBadge} ${gzBadge} ${qvBadge}
+          <span>Mercati: ${marketsStr}</span>
+        </div>
+      </div>
+      <div class="m-right">
+        ${affBadge(r.aff)}
+        <div class="m-ind ind-g">${fmt(r.comboScore, 1)}</div>
       </div>
     </div>
-    <div class="m-right">
-      ${affBadge(r.aff)}
-      <div class="m-ind ind-g">${fmt(r.comboScore, 1)}</div>
-    </div>
-  </div>
-  <div class="pickbar"><button class="pickbtn" data-addpick="${i}">➕ Aggiungi allo storico (Combo)</button></div>`;
-}
+    <div class="pickbar"><button class="pickbtn" data-addpick="${i}">➕ Aggiungi allo storico (Combo)</button></div>`;
+  }
 
-function patchForCombo() {
-  addComboTab();
-  const originalCurrentRows = window.currentRows;
-  window.currentRows = function() {
-    if (ST.market === 'combo') return getComboRows();
-    return originalCurrentRows();
-  };
-  setInterval(() => {
-    if (ST.market === 'combo') {
-      const main = document.getElementById('main');
-      if (main && !main.hasAttribute('data-combo-rendered')) {
-        const rows = getComboRows();
-        if (rows.length) {
-          const list = rows.map((r,i) => renderComboRow(r,i)).join('');
-          main.innerHTML = `<div class="sec"><div class="tag tag-mg">Combo Finder</div><div class="sec-ct">${rows.length} partite</div></div><div class="mlist">${list}</div>`;
-          main.setAttribute('data-combo-rendered', 'true');
-        } else {
-          main.innerHTML = `<div class="empty"><div class="ico">🔗</div><p>Nessuna combo trovata. Carica più dataset (Ov0.5, GG, O/U, MG, GZ, Quote, DM).</p></div>`;
-          main.setAttribute('data-combo-rendered', 'true');
-        }
-        document.querySelectorAll('[data-addpick]').forEach(btn => {
-          btn.removeEventListener('click', comboAddHandler);
-          btn.addEventListener('click', comboAddHandler);
-        });
-      }
-    } else {
-      const main = document.getElementById('main');
-      if (main) main.removeAttribute('data-combo-rendered');
+  // ==================== PERFORMANCE ====================
+  function getOddsFromDataMining(matchName, marketCategory) {
+    if (!ST.dataMining || !ST.dataMining.length) return null;
+    const normMatch = normName(matchName);
+    const dm = ST.dataMining.find(d => normName(d.match) === normMatch);
+    if (!dm) return null;
+    const marketMap = {
+      'Ov 0.5 PT': 'qOV05pt', 'Ov0.5PT': 'qOV05pt', 'GG': 'qGG',
+      'Ov 2.5': 'qOV25', 'Ov2.5': 'qOV25', 'U 2.5': 'qUN35', 'U2.5': 'qUN35', 'UN35': 'qUN35',
+      'MG 1-3': 'fixed_1.30', 'MG1-3': 'fixed_1.30', 'MG 1-3 Casa': 'fixed_1.30', 'MG 1-3 Ospite': 'fixed_1.30'
+    };
+    let key = marketCategory;
+    if (marketCategory.startsWith('Combo')) key = 'Combo';
+    const quotaField = marketMap[key];
+    if (!quotaField) return null;
+    if (quotaField === 'fixed_1.30') return 1.30;
+    const quota = dm[quotaField];
+    return (quota && !isNaN(quota) && quota > 0) ? quota : null;
+  }
+  function getPerformanceStats() {
+    const history = ST.history || [];
+    const resolved = history.filter(p => p.status === 'won' || p.status === 'lost');
+    const won = resolved.filter(p => p.status === 'won');
+    const lost = resolved.filter(p => p.status === 'lost');
+    const totalBets = resolved.length;
+    const winRate = totalBets ? (won.length / totalBets) * 100 : 0;
+    function getItemOdds(item) {
+      if (item.odds && item.odds > 0) return item.odds;
+      const odds = getOddsFromDataMining(item.match, item.category);
+      if (odds) return odds;
+      if (item.category && (item.category.includes('MG 1-3') || item.category.includes('MG1-3'))) return 1.30;
+      return 1.90;
     }
-  }, 200);
-  function comboAddHandler(e) {
-    const idx = parseInt(e.currentTarget.dataset.addpick, 10);
-    const rows = getComboRows();
-    const r = rows[idx];
-    if (r) {
-      const comboItem = {
-        match: r.evento,
-        category: `Combo ${r.tier}`,
-        source: `Combo Finder (${r.markets.map(m=>m.type).join(', ')})`,
-        ora: r.ora,
-        score: r.comboScore,
-        aff: r.aff,
-        markets: r.markets,
-        conflicts: r.conflicts,
-        dm: r.dm ? `NP:${r.dm.np}` : null
-      };
-      addPickToHistory(comboItem, 'combo');
+    let bankroll = 100;
+    let peak = 100;
+    let drawdown = 0;
+    const equityCurve = [];
+    for (let i = 0; i < resolved.length; i++) {
+      const p = resolved[i];
+      const odds = getItemOdds(p);
+      if (p.status === 'won') bankroll += (odds - 1);
+      else bankroll -= 1;
+      if (bankroll > peak) peak = bankroll;
+      const dd = (peak - bankroll) / peak * 100;
+      if (dd > drawdown) drawdown = dd;
+      equityCurve.push({ bet: i+1, bankroll, odds });
     }
+    const roi = ((bankroll - 100) / 100) * 100;
+    const categories = {};
+    resolved.forEach(p => {
+      const cat = p.category || 'Altro';
+      if (!categories[cat]) categories[cat] = { total: 0, won: 0, lost: 0, oddsSum: 0 };
+      categories[cat].total++;
+      if (p.status === 'won') {
+        categories[cat].won++;
+        categories[cat].oddsSum += getItemOdds(p);
+      } else categories[cat].lost++;
+    });
+    const catStats = Object.keys(categories).map(cat => {
+      const c = categories[cat];
+      const winRateCat = c.total ? (c.won / c.total) * 100 : 0;
+      const avgOdds = c.won ? c.oddsSum / c.won : 0;
+      const p = winRateCat / 100;
+      const kelly = (p * avgOdds - 1) / (avgOdds - 1);
+      const suggestedKelly = isFinite(kelly) && kelly > 0 ? Math.min(kelly, 0.25) : 0;
+      return { cat, total: c.total, won: c.won, lost: c.lost, winRate: winRateCat, avgOdds, suggestedKelly };
+    }).sort((a,b) => b.winRate - a.winRate);
+    let globalAvgOdds = 1.90;
+    if (won.length) {
+      let sumOdds = 0;
+      won.forEach(p => { sumOdds += getItemOdds(p); });
+      globalAvgOdds = sumOdds / won.length;
+    }
+    const globalKelly = (winRate/100 * globalAvgOdds - 1) / (globalAvgOdds - 1);
+    const suggestedBankrollPercent = isFinite(globalKelly) && globalKelly > 0 ? Math.min(globalKelly, 0.25) * 100 : 0;
+    return { totalBets, won: won.length, lost: lost.length, winRate, roi, bankrollFinal: bankroll, peak, drawdown, equityCurve, catStats, suggestedBankrollPercent, globalKelly };
   }
-}
+  function renderPerformanceView() {
+    const stats = getPerformanceStats();
+    const main = document.getElementById('main');
+    if (!main) return;
+    if (stats.totalBets === 0) {
+      main.innerHTML = `<div class="empty"><div class="ico">📊</div><p>Nessun pronostico concluso (vinto/perso) nello storico. Vai nella sezione Storico e imposta lo stato di alcuni pronostici.</p></div>`;
+      return;
+    }
+    const maxBankroll = Math.max(...stats.equityCurve.map(e => e.bankroll), 100);
+    const minBankroll = Math.min(...stats.equityCurve.map(e => e.bankroll), 100);
+    const range = maxBankroll - minBankroll;
+    const chartHeight = 80;
+    const chartPoints = stats.equityCurve.map(e => {
+      const y = chartHeight - ((e.bankroll - minBankroll) / range) * chartHeight;
+      return `${(e.bet / stats.totalBets) * 100}% ${y}px`;
+    }).join(', ');
+    const chartHtml = `<div style="margin:20px 0; background:var(--s2); border-radius:12px; padding:12px;">
+      <div class="bk-t">Andamento del bankroll (puntata fissa 1 unità)</div>
+      <svg viewBox="0 0 100 ${chartHeight+20}" style="width:100%; background:var(--bg); border-radius:8px;">
+        <polyline points="${chartPoints}" fill="none" stroke="var(--grn)" stroke-width="2"/>
+        <line x1="0" y1="${chartHeight}" x2="100" y2="${chartHeight}" stroke="var(--t3)" stroke-width="0.5"/>
+        <text x="0" y="${chartHeight+12}" fill="var(--t3)" font-size="6">${minBankroll.toFixed(1)}</text>
+        <text x="90" y="10" fill="var(--t3)" font-size="6">${maxBankroll.toFixed(1)}</text>
+      </svg>
+      <div class="note">Bankroll iniziale: 100 | Finale: ${stats.bankrollFinal.toFixed(2)} | ROI: ${stats.roi.toFixed(1)}%</div>
+    </div>`;
+    const catTable = `<table class="tablemini"><thead><tr><th>Categoria</th><th>Vinte/Pers</th><th>Win rate</th><th>Avg odds (vinte)</th><th>Suggerimento Kelly</th></tr></thead><tbody>${
+      stats.catStats.map(c => `<tr>
+        <td>${escapeHtml(c.cat)}</td>
+        <td>${c.won}/${c.lost}</td>
+        <td>${c.winRate.toFixed(1)}%</td>
+        <td>${c.avgOdds.toFixed(2)}</td>
+        <td class="${c.suggestedKelly > 0.05 ? 'good' : 'neu'}">${(c.suggestedKelly * 100).toFixed(1)}% del bankroll</td>
+      </tr>`).join('')
+    }</tbody></table>`;
+    main.innerHTML = `
+      <div class="sec"><div class="tag tag-mg">Performance & Kelly</div><div class="sec-ct">Basato su ${stats.totalBets} pronostici risolti</div></div>
+      <div class="statsgrid">
+        <div class="statcard"><div class="k">Vinte</div><div class="v">${stats.won}</div></div>
+        <div class="statcard"><div class="k">Perse</div><div class="v">${stats.lost}</div></div>
+        <div class="statcard"><div class="k">Win rate</div><div class="v">${stats.winRate.toFixed(1)}%</div></div>
+        <div class="statcard"><div class="k">ROI</div><div class="v ${stats.roi > 0 ? 'good' : 'warn'}">${stats.roi > 0 ? '+' : ''}${stats.roi.toFixed(1)}%</div></div>
+        <div class="statcard"><div class="k">Drawdown max</div><div class="v">${stats.drawdown.toFixed(1)}%</div></div>
+        <div class="statcard"><div class="k">Kelly suggerito</div><div class="v good">${stats.suggestedBankrollPercent.toFixed(1)}%</div></div>
+      </div>
+      ${chartHtml}
+      <div class="bk"><div class="bk-t">Rendimento per categoria</div>${catTable}</div>
+      <div class="note">💡 Il suggerimento Kelly rappresenta la frazione ottimale del bankroll da puntare su ogni scommessa della categoria per massimizzare la crescita a lungo termine. Valori >5% indicano un forte edge. Le quote sono prese da DataMining Plus (o fixed 1.30 per MG 1-3).</div>
+    `;
+  }
 
-setTimeout(() => {
-  if (typeof patchForCombo === 'function') patchForCombo();
-}, 500);
-  // ==================== PERFORMANCE & KELLY SIMULATOR (con quote da DataMining) ====================
-
-// Recupera la quota reale dal dataset DataMining in base al match e al mercato
-function getOddsFromDataMining(matchName, marketCategory) {
-  if (!ST.dataMining || !ST.dataMining.length) return null;
-  const normMatch = normName(matchName);
-  const dm = ST.dataMining.find(d => normName(d.match) === normMatch);
-  if (!dm) return null;
-  
-  const marketMap = {
-    'Ov 0.5 PT': 'qOV05pt',
-    'Ov0.5PT': 'qOV05pt',
-    'GG': 'qGG',
-    'Ov 2.5': 'qOV25',
-    'Ov2.5': 'qOV25',
-    'U 2.5': 'qUN35',
-    'U2.5': 'qUN35',
-    'UN35': 'qUN35',
-    'MG 1-3': 'fixed_1.30',
-    'MG1-3': 'fixed_1.30',
-    'MG 1-3 Casa': 'fixed_1.30',
-    'MG 1-3 Ospite': 'fixed_1.30'
-  };
-  
-  let key = marketCategory;
-  if (marketCategory.startsWith('Combo')) key = 'Combo';
-  const quotaField = marketMap[key];
-  if (!quotaField) return null;
-  if (quotaField === 'fixed_1.30') return 1.30;
-  const quota = dm[quotaField];
-  return (quota && !isNaN(quota) && quota > 0) ? quota : null;
-}
-
-// Calcola le statistiche di rendimento usando le quote reali o quelle di fallback
-function getPerformanceStats() {
-  const history = ST.history || [];
-  const resolved = history.filter(p => p.status === 'won' || p.status === 'lost');
-  const won = resolved.filter(p => p.status === 'won');
-  const lost = resolved.filter(p => p.status === 'lost');
-  const totalBets = resolved.length;
-  const winRate = totalBets ? (won.length / totalBets) * 100 : 0;
-  
-  function getItemOdds(item) {
-    if (item.odds && item.odds > 0) return item.odds;
-    const odds = getOddsFromDataMining(item.match, item.category);
-    if (odds) return odds;
-    if (item.category && (item.category.includes('MG 1-3') || item.category.includes('MG1-3'))) return 1.30;
-    return 1.90;
-  }
-  
-  let bankroll = 100;
-  let peak = 100;
-  let drawdown = 0;
-  const equityCurve = [];
-  for (let i = 0; i < resolved.length; i++) {
-    const p = resolved[i];
-    const odds = getItemOdds(p);
-    if (p.status === 'won') bankroll += (odds - 1);
-    else bankroll -= 1;
-    if (bankroll > peak) peak = bankroll;
-    const dd = (peak - bankroll) / peak * 100;
-    if (dd > drawdown) drawdown = dd;
-    equityCurve.push({ bet: i+1, bankroll, odds });
-  }
-  const roi = ((bankroll - 100) / 100) * 100;
-  
-  const categories = {};
-  resolved.forEach(p => {
-    const cat = p.category || 'Altro';
-    if (!categories[cat]) categories[cat] = { total: 0, won: 0, lost: 0, oddsSum: 0 };
-    categories[cat].total++;
-    if (p.status === 'won') {
-      categories[cat].won++;
-      categories[cat].oddsSum += getItemOdds(p);
-    } else categories[cat].lost++;
-  });
-  const catStats = Object.keys(categories).map(cat => {
-    const c = categories[cat];
-    const winRateCat = c.total ? (c.won / c.total) * 100 : 0;
-    const avgOdds = c.won ? c.oddsSum / c.won : 0;
-    const p = winRateCat / 100;
-    const kelly = (p * avgOdds - 1) / (avgOdds - 1);
-    const suggestedKelly = isFinite(kelly) && kelly > 0 ? Math.min(kelly, 0.25) : 0;
-    return { cat, total: c.total, won: c.won, lost: c.lost, winRate: winRateCat, avgOdds, suggestedKelly };
-  }).sort((a,b) => b.winRate - a.winRate);
-  
-  let globalAvgOdds = 1.90;
-  if (won.length) {
-    let sumOdds = 0;
-    won.forEach(p => { sumOdds += getItemOdds(p); });
-    globalAvgOdds = sumOdds / won.length;
-  }
-  const globalKelly = (winRate/100 * globalAvgOdds - 1) / (globalAvgOdds - 1);
-  const suggestedBankrollPercent = isFinite(globalKelly) && globalKelly > 0 ? Math.min(globalKelly, 0.25) * 100 : 0;
-  
-  return {
-    totalBets, won: won.length, lost: lost.length, winRate, roi, bankrollFinal: bankroll,
-    peak, drawdown, equityCurve, catStats, suggestedBankrollPercent, globalKelly
-  };
-}
-
-// Render vista Performance (stessa grafica di prima)
-function renderPerformanceView() {
-  const stats = getPerformanceStats();
-  const main = document.getElementById('main');
-  if (!main) return;
-  if (stats.totalBets === 0) {
-    main.innerHTML = `<div class="empty"><div class="ico">📊</div><p>Nessun pronostico concluso (vinto/perso) nello storico. Vai nella sezione Storico e imposta lo stato di alcuni pronostici.</p></div>`;
-    return;
-  }
-  const maxBankroll = Math.max(...stats.equityCurve.map(e => e.bankroll), 100);
-  const minBankroll = Math.min(...stats.equityCurve.map(e => e.bankroll), 100);
-  const range = maxBankroll - minBankroll;
-  const chartHeight = 80;
-  const chartPoints = stats.equityCurve.map(e => {
-    const y = chartHeight - ((e.bankroll - minBankroll) / range) * chartHeight;
-    return `${(e.bet / stats.totalBets) * 100}% ${y}px`;
-  }).join(', ');
-  const chartHtml = `<div style="margin:20px 0; background:var(--s2); border-radius:12px; padding:12px;">
-    <div class="bk-t">Andamento del bankroll (puntata fissa 1 unità)</div>
-    <svg viewBox="0 0 100 ${chartHeight+20}" style="width:100%; background:var(--bg); border-radius:8px;">
-      <polyline points="${chartPoints}" fill="none" stroke="var(--grn)" stroke-width="2"/>
-      <line x1="0" y1="${chartHeight}" x2="100" y2="${chartHeight}" stroke="var(--t3)" stroke-width="0.5"/>
-      <text x="0" y="${chartHeight+12}" fill="var(--t3)" font-size="6">${minBankroll.toFixed(1)}</text>
-      <text x="90" y="10" fill="var(--t3)" font-size="6">${maxBankroll.toFixed(1)}</text>
-    </svg>
-    <div class="note">Bankroll iniziale: 100 | Finale: ${stats.bankrollFinal.toFixed(2)} | ROI: ${stats.roi.toFixed(1)}%</div>
-  </div>`;
-  const catTable = `<table class="tablemini"><thead><tr><th>Categoria</th><th>Vinte/Pers</th><th>Win rate</th><th>Avg odds (vinte)</th><th>Suggerimento Kelly</th></tr></thead><tbody>${
-    stats.catStats.map(c => `<tr>
-      <td>${escapeHtml(c.cat)}</td>
-      <td>${c.won}/${c.lost}</td>
-      <td>${c.winRate.toFixed(1)}%</td>
-      <td>${c.avgOdds.toFixed(2)}</td>
-      <td class="${c.suggestedKelly > 0.05 ? 'good' : 'neu'}">${(c.suggestedKelly * 100).toFixed(1)}% del bankroll</td>
-    </tr>`).join('')
-  }</tbody></table>`;
-  main.innerHTML = `
-    <div class="sec"><div class="tag tag-mg">Performance & Kelly</div><div class="sec-ct">Basato su ${stats.totalBets} pronostici risolti</div></div>
-    <div class="statsgrid">
-      <div class="statcard"><div class="k">Vinte</div><div class="v">${stats.won}</div></div>
-      <div class="statcard"><div class="k">Perse</div><div class="v">${stats.lost}</div></div>
-      <div class="statcard"><div class="k">Win rate</div><div class="v">${stats.winRate.toFixed(1)}%</div></div>
-      <div class="statcard"><div class="k">ROI</div><div class="v ${stats.roi > 0 ? 'good' : 'warn'}">${stats.roi > 0 ? '+' : ''}${stats.roi.toFixed(1)}%</div></div>
-      <div class="statcard"><div class="k">Drawdown max</div><div class="v">${stats.drawdown.toFixed(1)}%</div></div>
-      <div class="statcard"><div class="k">Kelly suggerito</div><div class="v good">${stats.suggestedBankrollPercent.toFixed(1)}%</div></div>
-    </div>
-    ${chartHtml}
-    <div class="bk"><div class="bk-t">Rendimento per categoria</div>${catTable}</div>
-    <div class="note">💡 Il suggerimento Kelly rappresenta la frazione ottimale del bankroll da puntare su ogni scommessa della categoria per massimizzare la crescita a lungo termine. Valori >5% indicano un forte edge. Le quote sono prese da DataMining Plus (o fixed 1.30 per MG 1-3).</div>
-  `;
-}
-
-// Override di addPickToHistory per salvare la quota al momento dell'aggiunta
-const originalAddPick = window.addPickToHistory;
-window.addPickToHistory = function(item, market, customOdds = null) {
-  let odds = customOdds;
-  if (!odds) {
-    const matchName = item.evento || item.match || item.partita || item.nome;
-    if (market === 'ov05') odds = item.qrOv05 || getOddsFromDataMining(matchName, 'Ov 0.5 PT');
-    else if (market === 'gg') odds = item.qGG || getOddsFromDataMining(matchName, 'GG');
-    else if (market === 'o25') odds = item.qov25 || getOddsFromDataMining(matchName, 'Ov 2.5');
-    else if (market === 'u25') odds = item.qUN35 || getOddsFromDataMining(matchName, 'U 2.5');
-    else if (market === 'mg13') odds = 1.30;
-    else if (market === 'combo') odds = 1.90;
-    else odds = 1.90;
-  }
-  // Chiamata alla funzione originale che esiste già nell'app
-  if (typeof originalAddPick === 'function') {
-    // L'originale non accetta odds, quindi creiamo manualmente l'entry
+  // Override addPickToHistory per salvare la quota
+  const originalAddPick = addPickToHistory;
+  window.addPickToHistory = function(item, market, customOdds = null) {
+    let odds = customOdds;
+    if (!odds) {
+      const matchName = item.evento || item.match || item.partita || item.nome;
+      if (market === 'ov05') odds = item.qrOv05 || getOddsFromDataMining(matchName, 'Ov 0.5 PT');
+      else if (market === 'gg') odds = item.qGG || getOddsFromDataMining(matchName, 'GG');
+      else if (market === 'o25') odds = item.qov25 || getOddsFromDataMining(matchName, 'Ov 2.5');
+      else if (market === 'u25') odds = item.qUN35 || getOddsFromDataMining(matchName, 'U 2.5');
+      else if (market === 'mg13') odds = 1.30;
+      else if (market === 'combo') odds = 1.90;
+      else odds = 1.90;
+    }
     const entry = buildHistoryEntry(item, market);
     entry.odds = odds;
     const exists = ST.history.some(x => x.dedupe === entry.dedupe && x.status === 'pending');
@@ -1716,32 +1547,128 @@ window.addPickToHistory = function(item, market, customOdds = null) {
     safeSaveStorage(ST.history);
     setUploadStatus(`Aggiunto: ${entry.category} - ${entry.match} (quota ${odds.toFixed(2)})`, 'ok');
     render();
-  } else {
-    console.warn('Funzione addPickToHistory originale non trovata');
-  }
-};
+  };
 
-// Patch per il tab Performance
-function patchForPerformance() {
-  addPerformanceTab();
-  setInterval(() => {
-    if (ST.market === 'performance') {
-      const main = document.getElementById('main');
-      if (main && !main.hasAttribute('data-perf-rendered')) {
-        renderPerformanceView();
-        main.setAttribute('data-perf-rendered', 'true');
+  // ==================== EVENT LISTENERS E INIZIALIZZAZIONE ====================
+  function bindStatic(){
+    // Usa un listener sul body che catturi i click su .mtab-grid
+    document.body.addEventListener('click', (e) => {
+      const tab = e.target.closest('.mtab-grid');
+      if (tab && tab.dataset.m) {
+        ST.market = tab.dataset.m;
+        ST.q = '';
+        ST.league = 'all';
+        render();
+        document.querySelectorAll('.mtab-grid').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        return;
       }
-    } else {
-      const main = document.getElementById('main');
-      if (main) main.removeAttribute('data-perf-rendered');
-    }
-  }, 200);
-}
+      // Altri eventi...
+      const pick = e.target.closest('[data-pick]');
+      if (pick) { const inp = document.getElementById(pick.dataset.pick); if (inp) inp.click(); return; }
+      const clear = e.target.closest('[data-clear]');
+      if (clear) { clearDatasetState(clear.dataset.clear); ST[clear.dataset.clear]=[]; if(clear.dataset.clear==='plCards'&&ST.plSub==='cards')ST.plSub='shots'; if(clear.dataset.clear==='plShots'&&ST.plSub==='shots')ST.plSub='cards'; setUploadStatus('Dataset resettato.'); render(); return; }
+      const sub = e.target.closest('[data-sub]');
+      if (sub) { ST.sub = sub.dataset.sub; render(); return; }
+      const iacat = e.target.closest('[data-iacat]');
+      if (iacat) { ST.iaCat = iacat.dataset.iacat; render(); return; }
+      const plsub = e.target.closest('[data-plsub]');
+      if (plsub) { ST.plSub = plsub.dataset.plsub; render(); return; }
+      const sort = e.target.closest('[data-sort]');
+      if (sort) { ST.sortMode = sort.dataset.sort; if(ST.market==='gz') ST.gzSort=sort.dataset.sort==='time'?'time':'value'; render(); return; }
+      const qf = e.target.closest('[data-qfilter]');
+      if (qf) { ST.quoteFilter = qf.dataset.qfilter; render(); return; }
+      const gzf = e.target.closest('[data-gzfilter]');
+      if (gzf) { ST.gzFilter = gzf.dataset.gzfilter; render(); return; }
+      const gzs = e.target.closest('[data-gzsort]');
+      if (gzs) { ST.gzSort = gzs.dataset.gzsort; ST.sortMode = gzs.dataset.gzsort==='time'?'time':'score'; render(); return; }
+      const open = e.target.closest('[data-open]');
+      if (open) { openDetail(parseInt(open.dataset.open,10)); return; }
+      const add = e.target.closest('[data-addpick]');
+      if (add) { const rows = currentRows(); const r = rows[parseInt(add.dataset.addpick,10)]; if(r) addPickToHistory(r,ST.market); return; }
+      const hs = e.target.closest('[data-hset]');
+      if (hs) { setHistoryStatus(hs.dataset.hset, hs.dataset.val); return; }
+      const hd = e.target.closest('[data-hdel]');
+      if (hd) { removeHistoryItem(hd.dataset.hdel); return; }
+      const hst = e.target.closest('[data-hstatus]');
+      if (hst) { ST.histStatus = hst.dataset.hstatus; render(); return; }
+      const hcat = e.target.closest('[data-hcat]');
+      if (hcat) { ST.histCategory = hcat.dataset.hcat; render(); return; }
+      const clr = e.target.closest('#histClearResolved');
+      if (clr) { clearHistoryResolved(); return; }
+      const clrAll = e.target.closest('#histClearAllBtn');
+      if (clrAll) { clearAllHistory(); return; }
+      const exp = e.target.closest('#histExportBtn');
+      if (exp) { exportHistory(); return; }
+      if (e.target.id === 'pdfBtn') downloadPdf();
+    });
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'&&ST.det)closeDetail();});
+    document.getElementById('datasetToggle').addEventListener('click',()=>{
+      const panel=document.getElementById('datasetPanel');
+      const arrow=document.getElementById('toggleArrow');
+      panel.classList.toggle('open');
+      arrow.textContent=panel.classList.contains('open')?'▲':'▼';
+    });
+    document.body.addEventListener('change',e=>{ if(e.target.id==='leagueSel'){ST.league=e.target.value; render();} });
+    document.body.addEventListener('input',e=>{if(e.target.id==='searchIn'){ST.q=e.target.value.trim(); renderRows(); buildControls(); const s=document.getElementById('searchIn'); if(s) s.focus(); s?.setSelectionRange(ST.q.length,ST.q.length);}});
+  }
 
-setTimeout(() => {
-  if (typeof patchForPerformance === 'function') patchForPerformance();
-}, 600);
-initApp();
+  function render(){
+    // Aggiorna la classe active sui bottoni griglia
+    document.querySelectorAll('.mtab-grid').forEach(b => {
+      b.classList.toggle('active', b.dataset.m === ST.market);
+    });
+    const totals = DATASETS.reduce((s,d) => s + (ST[d.key]?.length || 0), 0);
+    const activeLabel = document.querySelector('.mtab-grid.active')?.textContent || '';
+    document.getElementById('hdrInfo').textContent = `Dataset caricati: ${totals} righe • Vista: ${activeLabel}`;
+    updateBacktestDisplay();
+    renderUploadGrid();
+    buildControls();
+    renderRows();
+  }
+
+  // Converte il menu in griglia e aggiunge i tab extra
+  function upgradeMenuToGrid() {
+    const oldTabs = document.getElementById('mtabs');
+    if (!oldTabs) return;
+    const grid = document.createElement('div');
+    grid.id = 'mtabs';
+    grid.className = 'mtabs-grid';
+    const btns = Array.from(oldTabs.querySelectorAll('.mtab'));
+    btns.forEach(btn => {
+      const newBtn = document.createElement('div');
+      newBtn.className = 'mtab-grid';
+      if (btn.classList.contains('active')) newBtn.classList.add('active');
+      newBtn.setAttribute('data-m', btn.getAttribute('data-m'));
+      newBtn.textContent = btn.textContent;
+      grid.appendChild(newBtn);
+    });
+    // Aggiunge Combo Finder e Performance se non esistono
+    if (!grid.querySelector('[data-m="combo"]')) {
+      const comboBtn = document.createElement('div');
+      comboBtn.className = 'mtab-grid';
+      comboBtn.setAttribute('data-m', 'combo');
+      comboBtn.textContent = 'Combo Finder';
+      grid.appendChild(comboBtn);
+    }
+    if (!grid.querySelector('[data-m="performance"]')) {
+      const perfBtn = document.createElement('div');
+      perfBtn.className = 'mtab-grid';
+      perfBtn.setAttribute('data-m', 'performance');
+      perfBtn.textContent = 'Performance';
+      grid.appendChild(perfBtn);
+    }
+    oldTabs.replaceWith(grid);
+  }
+
+  function initApp(){
+    restoreDatasets();
+    upgradeMenuToGrid();
+    bindStatic();
+    render();
+  }
+
+  initApp();
 })();
 </script>
 </body>
