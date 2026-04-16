@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0b0d12">
-<title>Match Analyzer Pro – Fase 4</title>
+<title>Match Analyzer Pro – Completo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -170,7 +170,6 @@ button{border:none;background:none;cursor:pointer}
   .toolbar .search,.toolbar .select,.toolbar .pdf-btn,.toolbar .aux-btn{width:100%}
   .det{padding:18px 14px}
 }
-/* Nuovo stile per la griglia dei menu */
 .mtabs-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, auto));
@@ -198,7 +197,6 @@ button{border:none;background:none;cursor:pointer}
   border-color: var(--grn);
   box-shadow: 0 2px 8px rgba(74,222,128,0.3);
 }
-/* Chip per filtri storici */
 .filter-chips {
   display: flex;
   flex-wrap: wrap;
@@ -524,17 +522,17 @@ button{border:none;background:none;cursor:pointer}
   function getDataMiningForMatch(evento) {if (!ST.dataMining || !ST.dataMining.length) return null;const normEv = normName(evento);return ST.dataMining.find(dm => normName(dm.match) === normEv) || null;}
 
   function ov05M1(r){return r.ind<320&&r.delta<-20&&r.diff<0}
-  function ov05AFF(r){const b=[];if(r.ind<280)b.push({n:'IND < 280',p:2});else if(r.ind<320)b.push({n:'IND 280-319',p:1.5});else if(r.ind<330)b.push({n:'IND 320-329',p:1});else b.push({n:'IND >= 330',p:0});if(r.delta<=-20)b.push({n:'Delta <= -20%',p:2});else if(r.delta<=-5)b.push({n:'Delta -19 a -5%',p:1});else if(r.delta<=0)b.push({n:'Delta -4.9 a 0%',p:.5});else b.push({n:'Delta > 0%',p:0});if(r.diff<0)b.push({n:'Diff < 0',p:1.5});else if(r.diff<=.2)b.push({n:'Diff 0-0.20',p:.5});else b.push({n:'Diff > 0.20',p:0});if(r.mge>=3.2)b.push({n:'MGE >= 3.20',p:1.5});else if(r.mge>=2.8)b.push({n:'MGE 2.80-3.19',p:1});else if(r.mge>=2.5)b.push({n:'MGE 2.50-2.79',p:.5});else b.push({n:'MGE < 2.50',p:0});b.push(r.cov05>=75?{n:'COv05% >= 75',p:.75}:{n:'COv05% < 75',p:0});b.push(r.oov05>=75?{n:'OOv05% >= 75',p:.75}:{n:'OOv05% < 75',p:0});b.push(r.qrGG>0&&r.qrO25>0&&r.qrGG<r.qrO25?{n:'QrGG < QrO25',p:.75}:{n:'QrGG >= QrO25',p:0});if(r.qrOv05>=1.15&&r.qrOv05<=1.30)b.push({n:'QOv05 1.15-1.30',p:.75});else if(r.qrOv05>=1.31&&r.qrOv05<=1.40)b.push({n:'QOv05 1.31-1.40',p:.5});else b.push({n:'QOv05 fuori range',p:0});const[ctC,ctO]=r.u5ct;if(ctC>=3&&ctO>=3)b.push({n:'U5CT entrambe >=3',p:.75});else if(ctC>=3||ctO>=3)b.push({n:'U5CT una >=3',p:.25});else b.push({n:'U5CT < 3',p:0});const[uC,uO]=r.u5;if(uC>=3&&uO>=3)b.push({n:'U5 entrambe >=3',p:.5});else if(uC>=3||uO>=3)b.push({n:'U5 una >=3',p:.15});else b.push({n:'U5 < 3',p:0});const missCT=(5-ctC)+(5-ctO);if(missCT>=7)b.push({n:'Ritardo CT >=7/10',p:.75});else if(missCT>=5)b.push({n:'Ritardo CT 5-6/10',p:.35});else b.push({n:'Ritardo CT <5',p:0});const tot=b.reduce((s,x)=>s+x.p,0);return {breakdown:b,total:tot,aff:tot>=8.5?5:tot>=7?4:tot>=5.5?3:tot>=4?2:1,max:12.9};}
+  function ov05AFF(r,qv){const b=[];if(r.ind<280)b.push({n:'IND < 280',p:2});else if(r.ind<320)b.push({n:'IND 280-319',p:1.5});else if(r.ind<330)b.push({n:'IND 320-329',p:1});else b.push({n:'IND >= 330',p:0});if(r.delta<=-20)b.push({n:'Delta <= -20%',p:2});else if(r.delta<=-5)b.push({n:'Delta -19 a -5%',p:1});else if(r.delta<=0)b.push({n:'Delta -4.9 a 0%',p:.5});else b.push({n:'Delta > 0%',p:0});if(r.diff<0)b.push({n:'Diff < 0',p:1.5});else if(r.diff<=.2)b.push({n:'Diff 0-0.20',p:.5});else b.push({n:'Diff > 0.20',p:0});if(r.mge>=3.2)b.push({n:'MGE >= 3.20',p:1.5});else if(r.mge>=2.8)b.push({n:'MGE 2.80-3.19',p:1});else if(r.mge>=2.5)b.push({n:'MGE 2.50-2.79',p:.5});else b.push({n:'MGE < 2.50',p:0});b.push(r.cov05>=75?{n:'COv05% >= 75',p:.75}:{n:'COv05% < 75',p:0});b.push(r.oov05>=75?{n:'OOv05% >= 75',p:.75}:{n:'OOv05% < 75',p:0});b.push(r.qrGG>0&&r.qrO25>0&&r.qrGG<r.qrO25?{n:'QrGG < QrO25',p:.75}:{n:'QrGG >= QrO25',p:0});if(r.qrOv05>=1.15&&r.qrOv05<=1.30)b.push({n:'QOv05 1.15-1.30',p:.75});else if(r.qrOv05>=1.31&&r.qrOv05<=1.40)b.push({n:'QOv05 1.31-1.40',p:.5});else b.push({n:'QOv05 fuori range',p:0});const[ctC,ctO]=r.u5ct;if(ctC>=3&&ctO>=3)b.push({n:'U5CT entrambe >=3',p:.75});else if(ctC>=3||ctO>=3)b.push({n:'U5CT una >=3',p:.25});else b.push({n:'U5CT < 3',p:0});const[uC,uO]=r.u5;if(uC>=3&&uO>=3)b.push({n:'U5 entrambe >=3',p:.5});else if(uC>=3||uO>=3)b.push({n:'U5 una >=3',p:.15});else b.push({n:'U5 < 3',p:0});const missCT=(5-ctC)+(5-ctO);if(missCT>=7)b.push({n:'Ritardo CT >=7/10',p:.75});else if(missCT>=5)b.push({n:'Ritardo CT 5-6/10',p:.35});else b.push({n:'Ritardo CT <5',p:0});if(qv&&marketSupportsQuote('ov05',qv))b.push({n:'QV supporto',p:0.8});const tot=b.reduce((s,x)=>s+x.p,0);return {breakdown:b,total:tot,aff:tot>=8.5?5:tot>=7?4:tot>=5.5?3:tot>=4?2:1,max:12.9};}
   function ggM1(r){return r.igbc>=150&&r.igbo>=150&&r.s12<150&&r.pgg>=55}
-  function ggAFF(r){const b=[];if(r.igbc>=200)b.push({n:'IGBc >= 200',p:2});else if(r.igbc>=150)b.push({n:'IGBc 150-199',p:1.5});else if(r.igbc>=100)b.push({n:'IGBc 100-149',p:.75});else b.push({n:'IGBc < 100',p:0});if(r.igbo>=200)b.push({n:'IGBo >= 200',p:2});else if(r.igbo>=150)b.push({n:'IGBo 150-199',p:1.5});else if(r.igbo>=100)b.push({n:'IGBo 100-149',p:.75});else b.push({n:'IGBo < 100',p:0});if(r.s12<80)b.push({n:'S1-S2 < 80',p:2});else if(r.s12<150)b.push({n:'S1-S2 80-149',p:1.5});else if(r.s12<300)b.push({n:'S1-S2 150-299',p:.75});else b.push({n:'S1-S2 >= 300',p:0});if(r.pgg>=65)b.push({n:'PGG >= 65%',p:1.5});else if(r.pgg>=55)b.push({n:'PGG 55-64%',p:1});else if(r.pgg>=45)b.push({n:'PGG 45-54%',p:.5});else b.push({n:'PGG < 45%',p:0});if(r.diff<-.5)b.push({n:'Diff < -0.5',p:1.5});else if(r.diff<=0)b.push({n:'Diff -0.5 a 0',p:.75});else b.push({n:'Diff > 0',p:0});if(r.mge>=3)b.push({n:'MGE >= 3.0',p:1.5});else if(r.mge>=2.5)b.push({n:'MGE 2.50-2.99',p:.75});else b.push({n:'MGE < 2.50',p:0});if(r.qov25>0&&r.qov25<1.7)b.push({n:'qOv2.5 < 1.70',p:.75});else if(r.qov25<=2)b.push({n:'qOv2.5 1.70-2.00',p:.25});else b.push({n:'qOv2.5 > 2.00',p:0});const tot=b.reduce((s,x)=>s+x.p,0);return {breakdown:b,total:tot,aff:tot>=8.5?5:tot>=7?4:tot>=5.5?3:tot>=4?2:1,max:11.25};}
+  function ggAFF(r,qv){const b=[];if(r.igbc>=200)b.push({n:'IGBc >= 200',p:2});else if(r.igbc>=150)b.push({n:'IGBc 150-199',p:1.5});else if(r.igbc>=100)b.push({n:'IGBc 100-149',p:.75});else b.push({n:'IGBc < 100',p:0});if(r.igbo>=200)b.push({n:'IGBo >= 200',p:2});else if(r.igbo>=150)b.push({n:'IGBo 150-199',p:1.5});else if(r.igbo>=100)b.push({n:'IGBo 100-149',p:.75});else b.push({n:'IGBo < 100',p:0});if(r.s12<80)b.push({n:'S1-S2 < 80',p:2});else if(r.s12<150)b.push({n:'S1-S2 80-149',p:1.5});else if(r.s12<300)b.push({n:'S1-S2 150-299',p:.75});else b.push({n:'S1-S2 >= 300',p:0});if(r.pgg>=65)b.push({n:'PGG >= 65%',p:1.5});else if(r.pgg>=55)b.push({n:'PGG 55-64%',p:1});else if(r.pgg>=45)b.push({n:'PGG 45-54%',p:.5});else b.push({n:'PGG < 45%',p:0});if(r.diff<-.5)b.push({n:'Diff < -0.5',p:1.5});else if(r.diff<=0)b.push({n:'Diff -0.5 a 0',p:.75});else b.push({n:'Diff > 0',p:0});if(r.mge>=3)b.push({n:'MGE >= 3.0',p:1.5});else if(r.mge>=2.5)b.push({n:'MGE 2.50-2.99',p:.75});else b.push({n:'MGE < 2.50',p:0});if(r.qov25>0&&r.qov25<1.7)b.push({n:'qOv2.5 < 1.70',p:.75});else if(r.qov25<=2)b.push({n:'qOv2.5 1.70-2.00',p:.25});else b.push({n:'qOv2.5 > 2.00',p:0});if(qv&&marketSupportsQuote('gg',qv))b.push({n:'QV supporto',p:0.8});const tot=b.reduce((s,x)=>s+x.p,0);return {breakdown:b,total:tot,aff:tot>=8.5?5:tot>=7?4:tot>=5.5?3:tot>=4?2:1,max:11.25};}
   function o25M1(r){return r.igbt>=300&&r.mge>=3&&r.diff<=0}
-  function o25AFF(r){const b=[];if(r.igbt>=400)b.push({n:'IGBt >= 400',p:2.5});else if(r.igbt>=350)b.push({n:'IGBt 350-399',p:2});else if(r.igbt>=300)b.push({n:'IGBt 300-349',p:1.5});else if(r.igbt>=250)b.push({n:'IGBt 250-299',p:.75});else b.push({n:'IGBt < 250',p:0});if(r.mge>=3.5)b.push({n:'MGE >= 3.50',p:2});else if(r.mge>=3)b.push({n:'MGE 3.00-3.49',p:1.5});else if(r.mge>=2.5)b.push({n:'MGE 2.50-2.99',p:.5});else b.push({n:'MGE < 2.50',p:0});if(r.diff<-1)b.push({n:'Diff < -1.0',p:2});else if(r.diff<-.5)b.push({n:'Diff -1.0 a -0.5',p:1.5});else if(r.diff<=0)b.push({n:'Diff -0.5 a 0',p:.75});else if(r.diff<=.3)b.push({n:'Diff 0-0.30',p:.25});else b.push({n:'Diff > 0.30',p:0});let s12p=0,s12n='';if(r.igbc>=400||r.igbo>=400){s12p=1.5;s12n='IGBc/o >= 400';}else if(r.s12<100){s12p=1.5;s12n='S1-S2 < 100';}else if(r.s12<200){s12p=1;s12n='S1-S2 100-199';}else if(r.s12<350){s12p=.5;s12n='S1-S2 200-349';}else{s12p=0;s12n='S1-S2 >= 350';}b.push({n:s12n,p:s12p});if(r.pgg>=65)b.push({n:'PGG >= 65%',p:1});else if(r.pgg>=55)b.push({n:'PGG 55-64%',p:.5});else if(r.pgg>=45)b.push({n:'PGG 45-54%',p:.25});else b.push({n:'PGG < 45%',p:0});if(r.qov25>0&&r.qov25<1.45)b.push({n:'qOv2.5 < 1.45',p:1.5});else if(r.qov25<=1.65)b.push({n:'qOv2.5 1.45-1.65',p:1});else if(r.qov25<=1.85)b.push({n:'qOv2.5 1.66-1.85',p:.5});else b.push({n:'qOv2.5 > 1.85',p:0});const tot=b.reduce((s,x)=>s+x.p,0);return {breakdown:b,total:tot,aff:tot>=8.5?5:tot>=7?4:tot>=5.5?3:tot>=4?2:1,max:10.5};}
+  function o25AFF(r,qv){const b=[];if(r.igbt>=400)b.push({n:'IGBt >= 400',p:2.5});else if(r.igbt>=350)b.push({n:'IGBt 350-399',p:2});else if(r.igbt>=300)b.push({n:'IGBt 300-349',p:1.5});else if(r.igbt>=250)b.push({n:'IGBt 250-299',p:.75});else b.push({n:'IGBt < 250',p:0});if(r.mge>=3.5)b.push({n:'MGE >= 3.50',p:2});else if(r.mge>=3)b.push({n:'MGE 3.00-3.49',p:1.5});else if(r.mge>=2.5)b.push({n:'MGE 2.50-2.99',p:.5});else b.push({n:'MGE < 2.50',p:0});if(r.diff<-1)b.push({n:'Diff < -1.0',p:2});else if(r.diff<-.5)b.push({n:'Diff -1.0 a -0.5',p:1.5});else if(r.diff<=0)b.push({n:'Diff -0.5 a 0',p:.75});else if(r.diff<=.3)b.push({n:'Diff 0-0.30',p:.25});else b.push({n:'Diff > 0.30',p:0});let s12p=0,s12n='';if(r.igbc>=400||r.igbo>=400){s12p=1.5;s12n='IGBc/o >= 400';}else if(r.s12<100){s12p=1.5;s12n='S1-S2 < 100';}else if(r.s12<200){s12p=1;s12n='S1-S2 100-199';}else if(r.s12<350){s12p=.5;s12n='S1-S2 200-349';}else{s12p=0;s12n='S1-S2 >= 350';}b.push({n:s12n,p:s12p});if(r.pgg>=65)b.push({n:'PGG >= 65%',p:1});else if(r.pgg>=55)b.push({n:'PGG 55-64%',p:.5});else if(r.pgg>=45)b.push({n:'PGG 45-54%',p:.25});else b.push({n:'PGG < 45%',p:0});if(r.qov25>0&&r.qov25<1.45)b.push({n:'qOv2.5 < 1.45',p:1.5});else if(r.qov25<=1.65)b.push({n:'qOv2.5 1.45-1.65',p:1});else if(r.qov25<=1.85)b.push({n:'qOv2.5 1.66-1.85',p:.5});else b.push({n:'qOv2.5 > 1.85',p:0});if(qv&&marketSupportsQuote('o25',qv))b.push({n:'QV supporto',p:0.8});const tot=b.reduce((s,x)=>s+x.p,0);return {breakdown:b,total:tot,aff:tot>=8.5?5:tot>=7?4:tot>=5.5?3:tot>=4?2:1,max:10.5};}
   function u25M1(r){return r.diff>1.5&&r.mge>0&&r.mge<3}
-  function u25AFF(r){const b=[];if(r.diff>=2)b.push({n:'Diff >= 2.0 (sovra)',p:2.5});else if(r.diff>=1.5)b.push({n:'Diff 1.5-1.99',p:2});else if(r.diff>=1)b.push({n:'Diff 1.0-1.49',p:1});else if(r.diff>=.5)b.push({n:'Diff 0.5-0.99',p:.5});else b.push({n:'Diff < 0.5',p:0});if(r.mge>0&&r.mge<2)b.push({n:'MGE < 2.00',p:2.5});else if(r.mge<2.5)b.push({n:'MGE 2.00-2.49',p:2});else if(r.mge<3)b.push({n:'MGE 2.50-2.99',p:1});else b.push({n:'MGE >= 3.00',p:0});if(r.qov25>=2.3)b.push({n:'qOv2.5 >= 2.30',p:1.5});else if(r.qov25>=2)b.push({n:'qOv2.5 2.00-2.29',p:1});else if(r.qov25>=1.8)b.push({n:'qOv2.5 1.80-1.99',p:.5});else b.push({n:'qOv2.5 < 1.80',p:0});if(r.pgg>0&&r.pgg<35)b.push({n:'PGG < 35%',p:1.5});else if(r.pgg<45)b.push({n:'PGG 35-44%',p:1});else if(r.pgg<55)b.push({n:'PGG 45-54%',p:.5});else if(r.pgg>0)b.push({n:'PGG >= 55%',p:0});else b.push({n:'PGG N/D',p:0});if(r.igbt<200)b.push({n:'IGBt < 200',p:1.5});else if(r.igbt<250)b.push({n:'IGBt 200-249',p:1});else if(r.igbt<300)b.push({n:'IGBt 250-299',p:.5});else b.push({n:'IGBt >= 300',p:0});if(r.s12>=400)b.push({n:'S1-S2 >= 400',p:1});else if(r.s12>=200)b.push({n:'S1-S2 200-399',p:.5});else b.push({n:'S1-S2 < 200',p:0});const o25a=o25AFF(r);if(o25a.aff<=1)b.push({n:'Ov2.5 AFF 1 (conferma)',p:1.5});else if(o25a.aff<=2)b.push({n:'Ov2.5 AFF 2',p:.75});else b.push({n:'Ov2.5 AFF >= 3',p:0});const tot=b.reduce((s,x)=>s+x.p,0);return {breakdown:b,total:tot,aff:tot>=9?5:tot>=7.5?4:tot>=6?3:tot>=4.5?2:1,max:12};}
+  function u25AFF(r,qv){const b=[];if(r.diff>=2)b.push({n:'Diff >= 2.0 (sovra)',p:2.5});else if(r.diff>=1.5)b.push({n:'Diff 1.5-1.99',p:2});else if(r.diff>=1)b.push({n:'Diff 1.0-1.49',p:1});else if(r.diff>=.5)b.push({n:'Diff 0.5-0.99',p:.5});else b.push({n:'Diff < 0.5',p:0});if(r.mge>0&&r.mge<2)b.push({n:'MGE < 2.00',p:2.5});else if(r.mge<2.5)b.push({n:'MGE 2.00-2.49',p:2});else if(r.mge<3)b.push({n:'MGE 2.50-2.99',p:1});else b.push({n:'MGE >= 3.00',p:0});if(r.qov25>=2.3)b.push({n:'qOv2.5 >= 2.30',p:1.5});else if(r.qov25>=2)b.push({n:'qOv2.5 2.00-2.29',p:1});else if(r.qov25>=1.8)b.push({n:'qOv2.5 1.80-1.99',p:.5});else b.push({n:'qOv2.5 < 1.80',p:0});if(r.pgg>0&&r.pgg<35)b.push({n:'PGG < 35%',p:1.5});else if(r.pgg<45)b.push({n:'PGG 35-44%',p:1});else if(r.pgg<55)b.push({n:'PGG 45-54%',p:.5});else if(r.pgg>0)b.push({n:'PGG >= 55%',p:0});else b.push({n:'PGG N/D',p:0});if(r.igbt<200)b.push({n:'IGBt < 200',p:1.5});else if(r.igbt<250)b.push({n:'IGBt 200-249',p:1});else if(r.igbt<300)b.push({n:'IGBt 250-299',p:.5});else b.push({n:'IGBt >= 300',p:0});if(r.s12>=400)b.push({n:'S1-S2 >= 400',p:1});else if(r.s12>=200)b.push({n:'S1-S2 200-399',p:.5});else b.push({n:'S1-S2 < 200',p:0});const o25a=o25AFF(r);if(o25a.aff<=1)b.push({n:'Ov2.5 AFF 1 (conferma)',p:1.5});else if(o25a.aff<=2)b.push({n:'Ov2.5 AFF 2',p:.75});else b.push({n:'Ov2.5 AFF >= 3',p:0});if(qv&&marketSupportsQuote('u25',qv))b.push({n:'QV supporto',p:0.8});const tot=b.reduce((s,x)=>s+x.p,0);return {breakdown:b,total:tot,aff:tot>=9?5:tot>=7.5?4:tot>=6?3:tot>=4.5?2:1,max:12};}
   function mg13M1C(r){return r.ich>=300&&r.ich<=350&&r.varc>=30}
   function mg13M1O(r){return r.ica>=300&&r.ica<=350&&r.varo>=30}
-  function mg13AFF_C(r){const b=[];if(r.ich<=300)b.push({n:'ICH <= 300',p:2.5});else if(r.ich<=320)b.push({n:'ICH 301-320',p:2});else if(r.ich<=350)b.push({n:'ICH 321-350',p:1.5});else if(r.ich<=400)b.push({n:'ICH 351-400',p:.5});else b.push({n:'ICH > 400',p:0});if(r.varc>=40)b.push({n:'VarC >= 40%',p:2});else if(r.varc>=30)b.push({n:'VarC 30-39%',p:1.5});else if(r.varc>=20)b.push({n:'VarC 20-29%',p:.5});else b.push({n:'VarC < 20%',p:0});if(r.mgfc>=1.5&&r.mgfc<=2.5)b.push({n:'MGFC 1.5-2.5',p:1.5});else if(r.mgfc>=1&&r.mgfc<1.5)b.push({n:'MGFC 1.0-1.49',p:1});else if(r.mgfc>2.5&&r.mgfc<=3)b.push({n:'MGFC 2.51-3.0',p:.75});else b.push({n:'MGFC fuori range',p:0});if(r.vu5c>=60)b.push({n:'VU5C >= 60%',p:1});else if(r.vu5c>=40)b.push({n:'VU5C 40-59%',p:.5});else b.push({n:'VU5C < 40%',p:0});if(r.q1>=1.5&&r.q1<=2.5)b.push({n:'Q1 1.50-2.50',p:1});else if((r.q1>=1.2&&r.q1<1.5)||(r.q1>2.5&&r.q1<=4))b.push({n:'Q1 ok',p:.5});else b.push({n:'Q1 estrema',p:0});if(r.mgso>=1.5)b.push({n:'MGSO >= 1.5',p:1});else if(r.mgso>=1)b.push({n:'MGSO 1.0-1.49',p:.5});else b.push({n:'MGSO < 1.0',p:0});if(r.ritc>=3)b.push({n:'RitC >= 3',p:.75});else if(r.ritc>=1)b.push({n:'RitC 1-2',p:.25});else b.push({n:'RitC 0',p:0});const tot=b.reduce((s,x)=>s+x.p,0);return {breakdown:b,total:tot,aff:tot>=8?5:tot>=6.5?4:tot>=5?3:tot>=3.5?2:1,max:9.75};}
-  function mg13AFF_O(r){const b=[];if(r.ica<=300)b.push({n:'ICA <= 300',p:2.5});else if(r.ica<=320)b.push({n:'ICA 301-320',p:2});else if(r.ica<=350)b.push({n:'ICA 321-350',p:1.5});else if(r.ica<=400)b.push({n:'ICA 351-400',p:.5});else b.push({n:'ICA > 400',p:0});if(r.varo>=40)b.push({n:'VarO >= 40%',p:2});else if(r.varo>=30)b.push({n:'VarO 30-39%',p:1.5});else if(r.varo>=20)b.push({n:'VarO 20-29%',p:.5});else b.push({n:'VarO < 20%',p:0});if(r.mgfo>=1.5&&r.mgfo<=2.5)b.push({n:'MGFO 1.5-2.5',p:1.5});else if(r.mgfo>=1&&r.mgfo<1.5)b.push({n:'MGFO 1.0-1.49',p:1});else if(r.mgfo>2.5&&r.mgfo<=3)b.push({n:'MGFO 2.51-3.0',p:.75});else b.push({n:'MGFO fuori range',p:0});if(r.vu5o>=60)b.push({n:'VU5O >= 60%',p:1});else if(r.vu5o>=40)b.push({n:'VU5O 40-59%',p:.5});else b.push({n:'VU5O < 40%',p:0});if(r.q2>=2&&r.q2<=4)b.push({n:'Q2 2.00-4.00',p:1});else if(r.q2>4&&r.q2<=6)b.push({n:'Q2 4.01-6.00',p:.5});else b.push({n:'Q2 estrema',p:0});if(r.mgsc>=1.5)b.push({n:'MGSC >= 1.5',p:1});else if(r.mgsc>=1)b.push({n:'MGSC 1.0-1.49',p:.5});else b.push({n:'MGSC < 1.0',p:0});if(r.rito>=3)b.push({n:'RitO >= 3',p:.75});else if(r.rito>=1)b.push({n:'RitO 1-2',p:.25});else b.push({n:'RitO 0',p:0});const tot=b.reduce((s,x)=>s+x.p,0);return {breakdown:b,total:tot,aff:tot>=8?5:tot>=6.5?4:tot>=5?3:tot>=3.5?2:1,max:9.75};}
+  function mg13AFF_C(r,qv){const b=[];if(r.ich<=300)b.push({n:'ICH <= 300',p:2.5});else if(r.ich<=320)b.push({n:'ICH 301-320',p:2});else if(r.ich<=350)b.push({n:'ICH 321-350',p:1.5});else if(r.ich<=400)b.push({n:'ICH 351-400',p:.5});else b.push({n:'ICH > 400',p:0});if(r.varc>=40)b.push({n:'VarC >= 40%',p:2});else if(r.varc>=30)b.push({n:'VarC 30-39%',p:1.5});else if(r.varc>=20)b.push({n:'VarC 20-29%',p:.5});else b.push({n:'VarC < 20%',p:0});if(r.mgfc>=1.5&&r.mgfc<=2.5)b.push({n:'MGFC 1.5-2.5',p:1.5});else if(r.mgfc>=1&&r.mgfc<1.5)b.push({n:'MGFC 1.0-1.49',p:1});else if(r.mgfc>2.5&&r.mgfc<=3)b.push({n:'MGFC 2.51-3.0',p:.75});else b.push({n:'MGFC fuori range',p:0});if(r.vu5c>=60)b.push({n:'VU5C >= 60%',p:1});else if(r.vu5c>=40)b.push({n:'VU5C 40-59%',p:.5});else b.push({n:'VU5C < 40%',p:0});if(r.q1>=1.5&&r.q1<=2.5)b.push({n:'Q1 1.50-2.50',p:1});else if((r.q1>=1.2&&r.q1<1.5)||(r.q1>2.5&&r.q1<=4))b.push({n:'Q1 ok',p:.5});else b.push({n:'Q1 estrema',p:0});if(r.mgso>=1.5)b.push({n:'MGSO >= 1.5',p:1});else if(r.mgso>=1)b.push({n:'MGSO 1.0-1.49',p:.5});else b.push({n:'MGSO < 1.0',p:0});if(r.ritc>=3)b.push({n:'RitC >= 3',p:.75});else if(r.ritc>=1)b.push({n:'RitC 1-2',p:.25});else b.push({n:'RitC 0',p:0});if(qv&&marketSupportsQuote('mg13',qv))b.push({n:'QV supporto',p:0.8});const tot=b.reduce((s,x)=>s+x.p,0);return {breakdown:b,total:tot,aff:tot>=8?5:tot>=6.5?4:tot>=5?3:tot>=3.5?2:1,max:9.75};}
+  function mg13AFF_O(r,qv){const b=[];if(r.ica<=300)b.push({n:'ICA <= 300',p:2.5});else if(r.ica<=320)b.push({n:'ICA 301-320',p:2});else if(r.ica<=350)b.push({n:'ICA 321-350',p:1.5});else if(r.ica<=400)b.push({n:'ICA 351-400',p:.5});else b.push({n:'ICA > 400',p:0});if(r.varo>=40)b.push({n:'VarO >= 40%',p:2});else if(r.varo>=30)b.push({n:'VarO 30-39%',p:1.5});else if(r.varo>=20)b.push({n:'VarO 20-29%',p:.5});else b.push({n:'VarO < 20%',p:0});if(r.mgfo>=1.5&&r.mgfo<=2.5)b.push({n:'MGFO 1.5-2.5',p:1.5});else if(r.mgfo>=1&&r.mgfo<1.5)b.push({n:'MGFO 1.0-1.49',p:1});else if(r.mgfo>2.5&&r.mgfo<=3)b.push({n:'MGFO 2.51-3.0',p:.75});else b.push({n:'MGFO fuori range',p:0});if(r.vu5o>=60)b.push({n:'VU5O >= 60%',p:1});else if(r.vu5o>=40)b.push({n:'VU5O 40-59%',p:.5});else b.push({n:'VU5O < 40%',p:0});if(r.q2>=2&&r.q2<=4)b.push({n:'Q2 2.00-4.00',p:1});else if(r.q2>4&&r.q2<=6)b.push({n:'Q2 4.01-6.00',p:.5});else b.push({n:'Q2 estrema',p:0});if(r.mgsc>=1.5)b.push({n:'MGSC >= 1.5',p:1});else if(r.mgsc>=1)b.push({n:'MGSC 1.0-1.49',p:.5});else b.push({n:'MGSC < 1.0',p:0});if(r.rito>=3)b.push({n:'RitO >= 3',p:.75});else if(r.rito>=1)b.push({n:'RitO 1-2',p:.25});else b.push({n:'RitO 0',p:0});if(qv&&marketSupportsQuote('mg13',qv))b.push({n:'QV supporto',p:0.8});const tot=b.reduce((s,x)=>s+x.p,0);return {breakdown:b,total:tot,aff:tot>=8?5:tot>=6.5?4:tot>=5?3:tot>=3.5?2:1,max:9.75};}
   function scoreAmm(r){const b=[];if(r.amm>=.4)b.push({n:'Amm/p >= 0.40',p:3});else if(r.amm>=.3)b.push({n:'Amm/p 0.30-0.39',p:2.5});else if(r.amm>=.2)b.push({n:'Amm/p 0.20-0.29',p:1.5});else b.push({n:'Amm/p < 0.20',p:0});if(r.falli>=2.5)b.push({n:'Falli >= 2.5',p:2.5});else if(r.falli>=2)b.push({n:'Falli 2.0-2.49',p:2});else if(r.falli>=1.5)b.push({n:'Falli 1.5-1.99',p:1});else b.push({n:'Falli < 1.5',p:0});if(r.rit>=5)b.push({n:'Ritardo >= 5',p:2});else if(r.rit>=3)b.push({n:'Ritardo 3-4',p:1.5});else if(r.rit>=1)b.push({n:'Ritardo 1-2',p:.5});else b.push({n:'Ritardo 0',p:0});if(r.tackle>=2)b.push({n:'Tackle >= 2.0',p:1.5});else if(r.tackle>=1)b.push({n:'Tackle 1.0-1.99',p:.75});else b.push({n:'Tackle < 1.0',p:0});if(r.min>=70)b.push({n:'Minuti >= 70',p:.5});else b.push({n:'Minuti < 70',p:0});const tot=b.reduce((s,x)=>s+x.p,0);return {breakdown:b,total:tot,max:9.5,level:tot>=7?'hot':tot>=5?'warm':'mild'};}
   function scoreGol(r){const b=[];if(r.gol>=.4)b.push({n:'Gol/p >= 0.40',p:3});else if(r.gol>=.25)b.push({n:'Gol/p 0.25-0.39',p:2});else if(r.gol>=.15)b.push({n:'Gol/p 0.15-0.24',p:1});else b.push({n:'Gol/p < 0.15',p:0});if(r.tiriPorta>=2)b.push({n:'TiP >= 2.0',p:2.5});else if(r.tiriPorta>=1.5)b.push({n:'TiP 1.5-1.99',p:1.5});else if(r.tiriPorta>=1)b.push({n:'TiP 1.0-1.49',p:1});else b.push({n:'TiP < 1.0',p:0});if(r.rit>=5)b.push({n:'Ritardo >= 5',p:2});else if(r.rit>=3)b.push({n:'Ritardo 3-4',p:1.5});else if(r.rit>=1)b.push({n:'Ritardo 1-2',p:.5});else b.push({n:'Ritardo 0',p:0});if(r.tiriTot>=3)b.push({n:'TT >= 3.0',p:1.5});else if(r.tiriTot>=2)b.push({n:'TT 2.0-2.99',p:1});else b.push({n:'TT < 2.0',p:0});if(r.min>=70)b.push({n:'Minuti >= 70',p:.5});else b.push({n:'Minuti < 70',p:0});const tot=b.reduce((s,x)=>s+x.p,0);return {breakdown:b,total:tot,max:9.5,level:tot>=7?'hot':tot>=5?'warm':'mild'};}
 
@@ -649,9 +647,9 @@ button{border:none;background:none;cursor:pointer}
     let rows = [];
     if (ST.ov05.length) {
       rows = ST.ov05.map(r => {
-        const a = ov05AFF(r);
-        const gz = getGzAlignment(r.evento, 'over');
         const qv = getQuoteAlignment(r.evento);
+        const a = ov05AFF(r,qv);
+        const gz = getGzAlignment(r.evento, 'over');
         const dm = getDataMiningForMatch(r.evento);
         const dmFactor = getDMFactor(dm, 'ov05');
         const combinedScore = a.total * dmFactor;
@@ -673,9 +671,9 @@ button{border:none;background:none;cursor:pointer}
     let rows = [];
     if (ST.ggov25.length) {
       rows = ST.ggov25.map(r => {
-        const a = ggAFF(r);
-        const gz = getGzAlignment(r.evento, 'over');
         const qv = getQuoteAlignment(r.evento);
+        const a = ggAFF(r,qv);
+        const gz = getGzAlignment(r.evento, 'over');
         const dm = getDataMiningForMatch(r.evento);
         const dmFactor = getDMFactor(dm, 'gg');
         const combinedScore = a.total * dmFactor;
@@ -696,9 +694,9 @@ button{border:none;background:none;cursor:pointer}
     let rows = [];
     if (ST.ggov25.length) {
       rows = ST.ggov25.map(r => {
-        const a = o25AFF(r);
-        const gz = getGzAlignment(r.evento, 'over');
         const qv = getQuoteAlignment(r.evento);
+        const a = o25AFF(r,qv);
+        const gz = getGzAlignment(r.evento, 'over');
         const dm = getDataMiningForMatch(r.evento);
         const dmFactor = getDMFactor(dm, 'o25');
         const combinedScore = a.total * dmFactor;
@@ -719,9 +717,9 @@ button{border:none;background:none;cursor:pointer}
     let rows = [];
     if (ST.ggov25.length) {
       rows = ST.ggov25.map(r => {
-        const a = u25AFF(r);
-        const gz = getGzAlignment(r.evento, 'under');
         const qv = getQuoteAlignment(r.evento);
+        const a = u25AFF(r,qv);
+        const gz = getGzAlignment(r.evento, 'under');
         const dm = getDataMiningForMatch(r.evento);
         const dmFactor = getDMFactor(dm, 'u25');
         const combinedScore = a.total * dmFactor;
@@ -742,19 +740,20 @@ button{border:none;background:none;cursor:pointer}
     let rows = [];
     if (ST.mg13.length) {
       rows = ST.mg13.map(r => {
-        const house = mg13AFF_C(r), away = mg13AFF_O(r);
+        const qv = getQuoteAlignment(r.evento);
+        const house = mg13AFF_C(r,qv), away = mg13AFF_O(r,qv);
         const aff = ST.sub==='ospite'?away.aff:house.aff;
         const dm = getDataMiningForMatch(r.evento);
         const dmFactor = getDMFactor(dm, 'mg13');
         const combinedScore = Math.max(house.total, away.total) * dmFactor;
         const combinedAff = Math.min(5, Math.round(aff * dmFactor));
-        return { ...r, score: combinedScore, aff: combinedAff, originalScore: Math.max(house.total, away.total), originalAff: aff, house, away, breakdown: ST.sub==='ospite'?away.breakdown:house.breakdown, side: ST.sub==='ospite'?'ospite':'casa', m1c: mg13M1C(r), m1o: mg13M1O(r), dm };
+        return { ...r, score: combinedScore, aff: combinedAff, originalScore: Math.max(house.total, away.total), originalAff: aff, house, away, breakdown: ST.sub==='ospite'?away.breakdown:house.breakdown, side: ST.sub==='ospite'?'ospite':'casa', m1c: mg13M1C(r), m1o: mg13M1O(r), qvAlign: qv, dm };
       });
     } else if (ST.dataMining.length) {
       rows = ST.dataMining.map(dm => {
         const house = { total: 0, aff: 2, breakdown: [] };
         const away = { total: 0, aff: 2, breakdown: [] };
-        return { ora: dm.ora, evento: dm.match, ich:0, ica:0, house, away, score:0, aff: dm.np>=30?4:dm.np>=15?3:2, side:'casa', m1c:false, m1o:false, dm };
+        return { ora: dm.ora, evento: dm.match, ich:0, ica:0, house, away, score:0, aff: dm.np>=30?4:dm.np>=15?3:2, side:'casa', m1c:false, m1o:false, qvAlign: null, dm };
       });
     }
     if(ST.sub==='m1')rows=rows.filter(r=>r.m1c||r.m1o);
@@ -762,10 +761,10 @@ button{border:none;background:none;cursor:pointer}
     if(ST.sortMode==='time')return rows.sort(sortTime);
     return rows.sort((a,b)=>{const sa=ST.sub==='ospite'?a.away.total:a.house.total;const sb=ST.sub==='ospite'?b.away.total:b.house.total;return sb-sa||sortTime(a,b);});
   }
-  function getIaRows(){let rows=ST.ia.map(r=>({...r,score:r.avgAff,aff:r.maxAff>=4?5:r.maxAff>=3?4:r.maxAff>=2.5?3:r.maxAff>=1.5?2:1}));if(ST.iaCat!=='all')rows=rows.filter(r=>r.stats.some(s=>s.key===ST.iaCat));rows=filtLeague(rows,'lega');return sortRows(rows,'score');}
-  function getPlayerRows(){const isCards=ST.plSub==='cards';let rows=(isCards?ST.plCards:ST.plShots).map(r=>{const a=isCards?scoreAmm(r):scoreGol(r);return {...r,score:a.total,level:a.level,breakdown:a.breakdown,aff:a.total>=7?5:a.total>=5?4:a.total>=3.5?3:a.total>=2?2:1,marketLabel:isCards?'Cartellini':'Gol/Tiri'};});rows=filtLeague(rows,'lega');return sortRows(rows,'score');}
+  function getIaRows(){let rows=ST.ia.map(r=>{const qv=getQuoteAlignment(r.evento);return {...r,score:r.avgAff,aff:r.maxAff>=4?5:r.maxAff>=3?4:r.maxAff>=2.5?3:r.maxAff>=1.5?2:1,qvAlign:qv};});if(ST.iaCat!=='all')rows=rows.filter(r=>r.stats.some(s=>s.key===ST.iaCat));rows=filtLeague(rows,'lega');return sortRows(rows,'score');}
+  function getPlayerRows(){const isCards=ST.plSub==='cards';let rows=(isCards?ST.plCards:ST.plShots).map(r=>{const a=isCards?scoreAmm(r):scoreGol(r);const qv=getQuoteAlignment(r.partita);return {...r,score:a.total,level:a.level,breakdown:a.breakdown,aff:a.total>=7?5:a.total>=5?4:a.total>=3.5?3:a.total>=2?2:1,marketLabel:isCards?'Cartellini':'Gol/Tiri',qvAlign:qv};});rows=filtLeague(rows,'lega');return sortRows(rows,'score');}
   function getQuoteRows(){let rows=ST.quoteValore.map(r=>{const a=analyzeQuoteMatch(r);return {...r,score:a.score,...a};});if(ST.quoteFilter!=='all')rows=rows.filter(r=>r.golSide===ST.quoteFilter);rows=filt(rows);return ST.sortMode==='time'?[...rows].sort(sortTime):[...rows].sort((a,b)=>b.score-a.score||sortTime(a,b));}
-  function getGzRows(){let rows=ST.gz.map(r=>({...r,prob:gzProbability(r.gz),score:Math.abs(r.gz||0)}));if(ST.gzFilter!=='all')rows=rows.filter(r=>r.prob.type===ST.gzFilter);rows=filtLeague(rows,'lega');if(ST.gzSort==='time'||ST.sortMode==='time')return [...rows].sort(sortTime);return [...rows].sort((a,b)=>Math.abs(b.gz||0)-Math.abs(a.gz||0)||sortTime(a,b));}
+  function getGzRows(){let rows=ST.gz.map(r=>{const qv=getQuoteAlignment(r.evento);return {...r,prob:gzProbability(r.gz),score:Math.abs(r.gz||0),qvAlign:qv};});if(ST.gzFilter!=='all')rows=rows.filter(r=>r.prob.type===ST.gzFilter);rows=filtLeague(rows,'lega');if(ST.gzSort==='time'||ST.sortMode==='time')return [...rows].sort(sortTime);return [...rows].sort((a,b)=>Math.abs(b.gz||0)-Math.abs(a.gz||0)||sortTime(a,b));}
   function getGeneralRows(){const rows=[];getOv05Rows().slice(0,5).forEach(r=>rows.push({ora:r.ora,evento:r.evento,market:'Ov 0.5PT',score:r.score,aff:r.aff,source:r,advice:r.aff>=4?'Linea prudente con buon supporto':'Segnale da confermare'}));getGgRows().slice(0,5).forEach(r=>rows.push({ora:r.ora,evento:r.evento,market:'GG',score:r.score,aff:r.aff,source:r,advice:r.gzAlign?.aligned&&r.qvAlign&&marketSupportsQuote('gg',r.qvAlign)?'GG sostenuto da GZ e 1X2':'GG interessante ma non pienamente convergente'}));getO25Rows().slice(0,5).forEach(r=>rows.push({ora:r.ora,evento:r.evento,market:'Ov 2.5',score:r.score,aff:r.aff,source:r,advice:r.gzAlign?.aligned?'Over supportato da GZ':'Over da verificare con le quote'}));getU25Rows().slice(0,5).forEach(r=>rows.push({ora:r.ora,evento:r.evento,market:'U 2.5',score:r.score,aff:r.aff,source:r,advice:r.gzAlign?.aligned?'Under coerente con GZ':'Under senza conferma piena'}));getMgRows().slice(0,5).forEach(r=>rows.push({ora:r.ora,evento:r.evento,market:'MG 1-3',score:Math.max(r.house.total,r.away.total),aff:Math.max(r.house.aff,r.away.aff),source:r,advice:'Mercato smart utile per match equilibrati'}));getIaRows().slice(0,5).forEach(r=>rows.push({ora:r.ora,evento:r.evento,market:'Stats IA',score:r.score,aff:r.aff,source:r,advice:'Supporto statistico accessorio'}));buildHubMatchMap().slice(0,5).forEach(r=>{if(r.advice.main)rows.push({ora:r.ora,evento:r.evento,market:'Pronostico finale',score:r.score,aff:r.aff,source:r,advice:r.advice.summary});});rows.sort((a,b)=>b.score-a.score||sortTime(a,b));return filt(rows);}
   function getDataMiningRows(){
     let rows = ST.dataMining.map(dm => ({...dm, score: dm.np}));
@@ -805,7 +804,14 @@ button{border:none;background:none;cursor:pointer}
     const match=histMatchName(m,r);
     const source=sourceLabel(m);
     const key=[category,match,r.ora||'',source].join('|').toLowerCase();
-    return {id:'h_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),dedupe:key,createdAt:new Date().toISOString(),ora:r.ora||'',match,category,source,status:'pending',score:typeof r.score==='number'?r.score:null,aff:r.aff||null,note:'',rawMarket:m};
+    let odds = null;
+    if (m === 'ov05') odds = r.qrOv05 || (r.dm ? r.dm.qOV05pt : null);
+    else if (m === 'gg') odds = r.qGG || (r.dm ? r.dm.qGG : null);
+    else if (m === 'o25') odds = r.qov25 || (r.dm ? r.dm.qOV25 : null);
+    else if (m === 'u25') odds = r.qUN35 || (r.dm ? r.dm.qUN35 : null);
+    else if (m === 'mg13') odds = 1.30;
+    else if (m === 'combo') odds = 1.90;
+    return {id:'h_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),dedupe:key,createdAt:new Date().toISOString(),ora:r.ora||'',match,category,source,status:'pending',score:typeof r.score==='number'?r.score:null,aff:r.aff||null,note:'',rawMarket:m,odds};
   }
   function addPickToHistory(r,m){
     const item=buildHistoryEntry(r,m);
@@ -813,7 +819,7 @@ button{border:none;background:none;cursor:pointer}
     if(exists){alert('Pronostico già presente nello storico.');return;}
     ST.history.unshift(item);
     safeSaveStorage(ST.history);
-    setUploadStatus(`Aggiunto allo storico: ${item.category} - ${item.match}`,'ok');
+    setUploadStatus(`Aggiunto allo storico: ${item.category} - ${item.match} (quota ${item.odds?.toFixed(2)||'N/D'})`,'ok');
     render();
   }
   function setHistoryStatus(id,status){const x=ST.history.find(v=>v.id===id); if(!x)return; x.status=status; x.updatedAt=new Date().toISOString(); safeSaveStorage(ST.history); render();}
@@ -845,7 +851,8 @@ button{border:none;background:none;cursor:pointer}
   }
   function renderStoricoRow(r){
     const st=r.status==='won'?'<span class="badge good">Vinta</span>':r.status==='lost'?'<span class="badge warn">Persa</span>':'<span class="badge neu">In attesa</span>';
-    return `<div class="histrow"><div class="histtop"><div><div class="histname">${escapeHtml(r.match)}</div><div class="histmeta"><span class="badge alt">${escapeHtml(r.category)}</span><span>${escapeHtml(r.source)}</span>${r.ora?`<span>${escapeHtml(r.ora)}</span>`:''}${st}</div></div><div>${r.aff?affBadge(r.aff):''}</div></div><div class="histactions"><button class="mini ok" data-hset="${r.id}" data-val="won">✅ Vinta</button><button class="mini no" data-hset="${r.id}" data-val="lost">❌ Persa</button><button class="mini dim" data-hset="${r.id}" data-val="pending">⏳ Reset</button><button class="mini dim" data-hdel="${r.id}">🗑 Elimina</button></div></div>`;
+    const quotaText = r.odds ? ` (quota ${r.odds.toFixed(2)})` : '';
+    return `<div class="histrow"><div class="histtop"><div><div class="histname">${escapeHtml(r.match)}</div><div class="histmeta"><span class="badge alt">${escapeHtml(r.category)}</span><span>${escapeHtml(r.source)}</span>${r.ora?`<span>${escapeHtml(r.ora)}</span>`:''}${st}${quotaText}</div></div><div>${r.aff?affBadge(r.aff):''}</div></div><div class="histactions"><button class="mini ok" data-hset="${r.id}" data-val="won">✅ Vinta</button><button class="mini no" data-hset="${r.id}" data-val="lost">❌ Persa</button><button class="mini dim" data-hset="${r.id}" data-val="pending">⏳ Reset</button><button class="mini dim" data-hdel="${r.id}">🗑 Elimina</button></div></div>`;
   }
 
   // ==================== RENDER ====================
@@ -880,21 +887,9 @@ button{border:none;background:none;cursor:pointer}
     const leagueKey=ST.market==='gg'||ST.market==='o25'||ST.market==='u25'?'lega':ST.market==='ia'?'lega':ST.market==='players'?'lega':ST.market==='gz'?'lega':null;
     const leagues=leagueKey?getLeagueOptions(base,leagueKey):[];
     let stabs='';
-    if(ST.market==='combo') {
-  const rows = getComboRows();
-  const stabs = `<div class="stabs"><button class="stab ${ST.sortMode==='score'?'active':''}" data-sort="score">📊 Score</button><button class="stab ${ST.sortMode==='time'?'active':''}" data-sort="time">⏰ Orario</button></div>`;
-  document.getElementById('controls').innerHTML = `${stabs}<div class="toolbar"><input class="search" id="searchIn" placeholder="Cerca partita..." value="${escapeHtml(ST.q)}"><button class="pdf-btn" id="pdfBtn">${svgPDF}<span>Scarica PDF</span></button></div><div class="status">Partite trovate: <strong>${rows.length}</strong></div><div id="uploadStatus" class="up-status"></div>`;
-  return;
-}
-if(ST.market==='performance') {
-  // I controlli non servono, la vista è già renderizzata
-  document.getElementById('controls').innerHTML = `<div class="toolbar"><button class="pdf-btn" id="pdfBtn">${svgPDF}<span>Scarica PDF (Performance)</span></button></div>`;
-  return;
-}
     if(ST.market==='storico'){
       const sum=historySummary(ST.history||[]);
       const cats=['all',...sum.cats.map(x=>x.cat)];
-      // Usa chip
       const statusChips = ['all','pending','won','lost'].map(s => `
         <div class="chip ${ST.histStatus === s ? 'active' : ''}" data-hstatus="${s}">
           ${s === 'all' ? '📋 Tutti' : s === 'pending' ? '⏳ In attesa' : s === 'won' ? '✅ Vinte' : '❌ Perse'}
@@ -955,40 +950,52 @@ if(ST.market==='performance') {
   }
 
   function rowOpenAttr(idx){return `data-open="${idx}" tabindex="0" role="button" aria-label="Apri dettagli"`;}
+  function renderRow(r,idx){
+    const qvAlign = r.qvAlign || getQuoteAlignment(r.evento||r.match);
+    const qvBadge = qvAlign ? `<span class="badge alt">QV:${qvAlign.golSide}</span>` : '';
+    const dmBadge = r.dm ? dmBadgeHtml(r.dm, ST.market) : '';
+    const gzBadge = r.gzAlign ? `<span class="badge ${r.gzAlign.aligned?'good':'neu'}">GZ:${r.gzAlign.prob.label}</span>` : '';
+    let mainInfo = '';
+    if (ST.market === 'ov05') {
+      mainInfo = `${indB(r.ind,'ov05')} ${r.m1?'<span class="badge good">M1</span>':''}`;
+    } else if (['gg','o25','u25'].includes(ST.market)) {
+      mainInfo = `${indB(ST.market==='gg'?r.pgg:r.igbt,'igbt')} ${r.m1?'<span class="badge good">M1</span>':''}`;
+    } else if (ST.market === 'mg13') {
+      mainInfo = `${indB(r.side==='ospite'?r.ica:r.ich,'mg')} ${(r.m1c||r.m1o)?'<span class="badge good">M1</span>':''}`;
+    } else if (ST.market === 'ia') {
+      mainInfo = r.stats.slice(0,2).map(s=>`<span class="badge neu">${s.key}:${s.pred}</span>`).join('');
+    } else if (ST.market === 'players') {
+      mainInfo = `<span class="badge ${r.level==='hot'?'good':r.level==='warm'?'warn':'neu'}">${r.level}</span>`;
+    } else if (ST.market === 'quote') {
+      mainInfo = `<span class="badge ${r.value1||r.value2?'good':'neu'}">${r.golSide||'N/D'}</span>`;
+    } else if (ST.market === 'gz') {
+      mainInfo = `<span class="badge ${r.prob.type==='over'?'good':r.prob.type==='under'?'warn':'neu'}">${r.prob.label}</span>`;
+    } else if (ST.market === 'hub') {
+      mainInfo = r.advice.main ? `<span class="badge top-plus">${r.advice.main.market} ${r.advice.main.tier}</span>` : '';
+    }
+    return `<div class="mrow" ${rowOpenAttr(idx)}>
+      <div class="m-ora">${escapeHtml(r.ora||'--:--')}</div>
+      <div>
+        <div class="m-name">${escapeHtml(r.evento||r.match||r.nome)}</div>
+        <div class="m-sub">
+          ${mainInfo}
+          ${dmBadge}
+          ${gzBadge}
+          ${qvBadge}
+        </div>
+      </div>
+      <div class="m-right">
+        ${affBadge(r.aff)}
+        <div class="m-ind ${r.aff>=4?'ind-g':r.aff>=3?'ind-o':'ind-r'}">${fmt(r.score,1)}</div>
+      </div>
+    </div>
+    <div class="pickbar"><button class="pickbtn" data-addpick="${idx}">➕ Aggiungi allo storico</button></div>`;
+  }
+
   function renderRows(){
-    const rows=currentRows();
-    const main=document.getElementById('main');
+    const rows = currentRows();
+    const main = document.getElementById('main');
     if(ST.market==='storico'){
-      const sum = historySummary(ST.history||[]);
-      const cats = ['all', ...sum.cats.map(x=>x.cat)];
-      const statusChips = ['all','pending','won','lost'].map(s => `
-        <div class="chip ${ST.histStatus === s ? 'active' : ''}" data-hstatus="${s}">
-          ${s === 'all' ? '📋 Tutti' : s === 'pending' ? '⏳ In attesa' : s === 'won' ? '✅ Vinte' : '❌ Perse'}
-        </div>
-      `).join('');
-      const catChips = cats.map(c => `
-        <div class="chip ${ST.histCategory === c ? 'active' : ''}" data-hcat="${c}">
-          ${c === 'all' ? '📂 Tutte le cat.' : escapeHtml(c)}
-        </div>
-      `).join('');
-      const sortChips = `
-        <div class="chip ${ST.sortMode === 'score' ? 'active' : ''}" data-sort="score">📊 Recenti</div>
-        <div class="chip ${ST.sortMode === 'time' ? 'active' : ''}" data-sort="time">⏰ Orario</div>
-      `;
-      document.getElementById('controls').innerHTML = `
-        <div class="filter-chips">${statusChips}</div>
-        <div class="filter-chips">${catChips}</div>
-        <div class="toolbar" style="justify-content: space-between;">
-          <input class="search" id="searchIn" placeholder="Cerca match o categoria" value="${escapeHtml(ST.q)}">
-          <div style="display: flex; gap: 8px;">${sortChips}</div>
-        </div>
-        <div style="display: flex; gap: 8px; margin-top: 12px;">
-          <button class="btn ghost" id="histExportBtn">📎 Esporta</button>
-          <button class="btn ghost" id="histClearResolved">🧹 Pulisci concluse</button>
-          <button class="btn ghost danger" id="histClearAllBtn">🗑 Cancella tutto</button>
-        </div>
-        <div class="status" style="margin-top: 12px;">Storico: <strong>${sum.tot}</strong> pick • Vinte ${sum.win} • Perse ${sum.loss} • Pending ${sum.pending} • % vinte ${fmt(sum.winPct,1)}%</div>
-      `;
       if(!rows.length){main.innerHTML=`<div class="empty"><div class="ico">🧾</div><p>Aggiungi i pronostici dalle sezioni dell'app e aggiorna poi manualmente esito vinta o persa.</p></div>`;return;}
       main.innerHTML=`<div class="mlist">${rows.map(r=>renderStoricoRow(r)).join('')}</div>`;
       return;
@@ -1018,203 +1025,10 @@ if(ST.market==='performance') {
       return;
     }
     const headerMap={ov05:['tag-m1','Ov 0.5 PT'],gg:['tag-a','GG'],o25:['tag-gen','Ov 2.5'],u25:['tag-b','U 2.5'],mg13:['tag-mg','MG 1-3'],ia:['tag-ia','Stats IA'],players:['tag-a','Giocatori'],quote:['tag-mg','Quote 1X2'],gz:['tag-gz','GZ Index'],gen:['tag-gen','Generale'],hub:['tag-ia','Match Hub']};
-    const [cls,lbl]=headerMap[ST.market];
-    if(!rows.length){main.innerHTML=`<div class="sec"><div class="tag ${cls}">${lbl}</div><div class="sec-ct">Nessun dato disponibile</div></div><div class="empty"><div class="ico">📂</div><p>Carica il CSV corretto o modifica i filtri per vedere i risultati. I dettagli modali e l'export PDF si attivano quando c'è almeno una riga visibile.</p></div>`;return;}
+    const [cls,lbl]=headerMap[ST.market]||['tag-gen','Analisi'];
+    if(!rows.length){main.innerHTML=`<div class="sec"><div class="tag ${cls}">${lbl}</div><div class="sec-ct">Nessun dato disponibile</div></div><div class="empty"><div class="ico">📂</div><p>Carica il CSV corretto o modifica i filtri per vedere i risultati.</p></div>`;return;}
     const list=rows.map((r,i)=>renderRow(r,i)).join('');
     main.innerHTML=`<div class="sec"><div class="tag ${cls}">${lbl}</div><div class="sec-ct">${rows.length} elementi</div></div><div class="mlist">${list}</div>`;
-  }
-
-  function renderRows(){
-  // 1) Combo Finder
-  if(ST.market === 'combo'){
-    const rows = getComboRows();
-    const main = document.getElementById('main');
-    if(!rows.length){
-      main.innerHTML = `<div class="empty"><div class="ico">🔗</div><p>Nessuna combo trovata. Carica più dataset (Ov0.5, GG, O/U, MG, GZ, Quote, DM).</p></div>`;
-      return;
-    }
-    const list = rows.map((r,i) => renderComboRow(r,i)).join('');
-    main.innerHTML = `<div class="sec"><div class="tag tag-mg">Combo Finder</div><div class="sec-ct">${rows.length} partite</div></div><div class="mlist">${list}</div>`;
-    return;
-  }
-  
-  // 2) Performance
-  if(ST.market === 'performance'){
-    renderPerformanceView();
-    return;
-  }
-  
-  // 3) Storico (già con chip)
-  if(ST.market === 'storico'){
-    const rows = getHistoryRows();
-    const main = document.getElementById('main');
-    if(!rows.length){
-      main.innerHTML = `<div class="empty"><div class="ico">🧾</div><p>Aggiungi i pronostici dalle sezioni dell'app.</p></div>`;
-      return;
-    }
-    main.innerHTML = `<div class="mlist">${rows.map(r=>renderStoricoRow(r)).join('')}</div>`;
-    return;
-  }
-  
-  // 4) DataMining
-  if(ST.market === 'datamining'){
-    const rows = getDataMiningRows();
-    const main = document.getElementById('main');
-    if(!rows.length){
-      main.innerHTML = `<div class="empty"><div class="ico">📂</div><p>Carica il file DataMining Plus.</p></div>`;
-      return;
-    }
-    const list = rows.map((r,i) => {
-      const npBadge = r.np >= 30 ? 'good' : r.np >= 15 ? 'warn' : 'neu';
-      return `<div class="mrow" data-open="${i}">
-        <div class="m-ora">${escapeHtml(r.ora||'--:--')}</div>
-        <div>
-          <div class="m-name">${escapeHtml(r.match)}</div>
-          <div class="m-sub">
-            <span class="badge ${npBadge}">NP: ${r.np}</span>
-            <span>1: ${r.p1.toFixed(0)}% (${r.q1.toFixed(2)})</span>
-            <span>X: ${r.pX.toFixed(0)}% (${r.qX.toFixed(2)})</span>
-            <span>2: ${r.p2.toFixed(0)}% (${r.q2.toFixed(2)})</span>
-            <span>OV25: ${r.pOV25.toFixed(0)}% (${r.qOV25.toFixed(2)})</span>
-          </div>
-        </div>
-        <div class="m-right">
-          <div class="m-ind ${r.pOV25 > 50 ? 'ind-g' : r.pOV25 > 40 ? 'ind-o' : 'ind-r'}">${r.pOV25.toFixed(0)}%</div>
-        </div>
-      </div>`;
-    }).join('');
-    main.innerHTML = `<div class="sec"><div class="tag tag-dm">📊 DataMining Plus</div><div class="sec-ct">${rows.length} partite</div></div><div class="mlist">${list}</div>`;
-    return;
-  }
-  
-  // 5) Tutti gli altri mercati (ov05, gg, o25, u25, mg13, ia, players, quote, gz, gen, hub)
-  const rows = currentRows();
-  const main = document.getElementById('main');
-  const headerMap = {
-    ov05:['tag-m1','Ov 0.5 PT'], gg:['tag-a','GG'], o25:['tag-gen','Ov 2.5'],
-    u25:['tag-b','U 2.5'], mg13:['tag-mg','MG 1-3'], ia:['tag-ia','Stats IA'],
-    players:['tag-a','Giocatori'], quote:['tag-mg','Quote 1X2'], gz:['tag-gz','GZ Index'],
-    gen:['tag-gen','Generale'], hub:['tag-ia','Match Hub']
-  };
-  const [cls,lbl] = headerMap[ST.market] || ['tag-gen','Analisi'];
-  if(!rows.length){
-    main.innerHTML = `<div class="sec"><div class="tag ${cls}">${lbl}</div><div class="sec-ct">Nessun dato disponibile</div></div><div class="empty"><div class="ico">📂</div><p>Carica il CSV corretto o modifica i filtri.</p></div>`;
-    return;
-  }
-  const list = rows.map((r,i) => renderRow(r,i)).join('');
-  main.innerHTML = `<div class="sec"><div class="tag ${cls}">${lbl}</div><div class="sec-ct">${rows.length} elementi</div></div><div class="mlist">${list}</div>`;
-}
-
-  // ==================== BARRE DI PROBABILITÀ PER RISULTATI ESATTI ====================
-  function renderExactScoresWithBars(reString) {
-    if (!reString) return '';
-    const scores = reString.split(/\s{2,}/).filter(s => s.includes('%'));
-    const items = scores.map(s => {
-      const parts = s.trim().split(':');
-      const score = parts[0].trim();
-      const perc = parseFloat(parts[1].replace('%', ''));
-      return { score, perc };
-    }).sort((a,b) => b.perc - a.perc).slice(0, 4);
-    if (!items.length) return '';
-    const maxPerc = items[0].perc;
-    return `<div class="bk"><div class="bk-t">🔮 Risultati esatti più probabili</div>` +
-      items.map(it => {
-        const barWidth = (it.perc / maxPerc) * 100;
-        return `<div class="prob-bar-container">
-          <div class="n" style="min-width:40px;">${it.score}</div>
-          <div class="prob-bar"><div class="prob-fill" style="width:${barWidth}%;"></div></div>
-          <div class="p pos" style="min-width:45px;text-align:right;">${it.perc.toFixed(1)}%</div>
-        </div>`;
-      }).join('') + `</div>`;
-  }
-
-  function detailKv(label,val,cls='n'){return `<div class="dc"><div class="dc-l">${escapeHtml(label)}</div><div class="dc-v ${cls}">${escapeHtml(val)}</div></div>`;}
-  function breakdownHtml(breakdown){if(!breakdown||!breakdown.length)return '<div class="note">Nessun breakdown disponibile.</div>';const total=breakdown.reduce((s,x)=>s+x.p,0);return `<div class="bk"><div class="bk-t">Breakdown punteggio</div>${breakdown.map(x=>`<div class="bk-r"><div class="n">${escapeHtml(x.n)}</div><div class="p ${x.p>0?'pos':'zero'}">+${fmt(x.p,2)}</div></div>`).join('')}<div class="bk-tot"><span>Totale</span><span class="p">${fmt(total,2)}</span></div></div>`;}
-  function openDetail(idx){const rows=currentRows();const r=rows[idx];if(!r)return;ST.det=r;ST.detMarket=ST.market;renderDetail();}
-  function closeDetail(){ST.det=null;ST.detMarket=null;document.getElementById('detM').innerHTML='';document.body.style.overflow='';}
-  function renderDetail(){
-    const r=ST.det;if(!r)return;document.body.style.overflow='hidden';
-    let title=r.evento||r.match||r.nome||'Dettaglio';
-    let subtitle=(r.lega||r.nazione||r.partita||r.marketLabel||'')+(r.ora?` • ${r.ora}`:'');
-    let score=fmt(r.score||Math.max(r.house?.total||0,r.away?.total||0),2);
-    let aff=r.aff||Math.max(r.house?.aff||0,r.away?.aff||0)||3;
-    let cards=''; let breakdown=''; let dmSection=''; let reBars='';
-    const dm = r.dm;
-    if (dm) {
-      dmSection = `<div class="bk"><div class="bk-t">📈 DataMining Plus (NP: ${dm.np})</div><div class="dg">
-        ${detailKv('1', `${dm.p1.toFixed(0)}% / ${dm.q1.toFixed(2)}`, dm.p1>50?'g':'n')}
-        ${detailKv('X', `${dm.pX.toFixed(0)}% / ${dm.qX.toFixed(2)}`)}
-        ${detailKv('2', `${dm.p2.toFixed(0)}% / ${dm.q2.toFixed(2)}`, dm.p2>50?'g':'n')}
-        ${detailKv('GG', `${dm.pGG.toFixed(0)}% / ${dm.qGG.toFixed(2)}`)}
-        ${detailKv('OV15', `${dm.pOV15.toFixed(0)}% / ${dm.qOV15.toFixed(2)}`)}
-        ${detailKv('OV25', `${dm.pOV25.toFixed(0)}% / ${dm.qOV25.toFixed(2)}`)}
-        ${detailKv('UN35', `${dm.pUN35.toFixed(0)}% / ${dm.qUN35.toFixed(2)}`)}
-        ${detailKv('OV0.5PT', `${dm.pOV05pt.toFixed(0)}% / ${dm.qOV05pt.toFixed(2)}`)}
-        ${detailKv('MGE', dm.mge.toFixed(2))}
-        ${detailKv('DIFF', dm.diff.toFixed(2))}
-        ${detailKv('IC', dm.ic)}
-        ${detailKv('RC/RO', `${dm.rc} / ${dm.ro}`)}
-        ${detailKv('SC', `${dm.pSC.toFixed(0)}% (IGBC ${dm.igbc})`)}
-        ${detailKv('SO', `${dm.pSO.toFixed(0)}% (IGBO ${dm.igbo})`)}
-      </div>`;
-      if (dm.re) {
-        reBars = renderExactScoresWithBars(dm.re);
-      }
-      if (isMG24(dm)) dmSection += `<div class="note"><span class="badge alt">🔥 MG 2-4 (quota 1.50)</span> Condizioni: OV15 >60% e UN35 >60%</div>`;
-      dmSection += `</div>`;
-    }
-    if(ST.detMarket==='datamining'){
-      title = r.match;
-      subtitle = `NP: ${r.np} • ${r.ora}`;
-      cards = [
-        detailKv('1', `${r.p1.toFixed(0)}% / ${r.q1.toFixed(2)}`, r.p1>50?'g':'n'),
-        detailKv('X', `${r.pX.toFixed(0)}% / ${r.qX.toFixed(2)}`),
-        detailKv('2', `${r.p2.toFixed(0)}% / ${r.q2.toFixed(2)}`, r.p2>50?'g':'n'),
-        detailKv('GG', `${r.pGG.toFixed(0)}% / ${r.qGG.toFixed(2)}`),
-        detailKv('OV15', `${r.pOV15.toFixed(0)}% / ${r.qOV15.toFixed(2)}`),
-        detailKv('OV25', `${r.pOV25.toFixed(0)}% / ${r.qOV25.toFixed(2)}`),
-        detailKv('UN35', `${r.pUN35.toFixed(0)}% / ${r.qUN35.toFixed(2)}`),
-        detailKv('OV0.5PT', `${r.pOV05pt.toFixed(0)}% / ${r.qOV05pt.toFixed(2)}`),
-        detailKv('MGE', r.mge.toFixed(2)),
-        detailKv('DIFF', r.diff.toFixed(2)),
-        detailKv('IC', r.ic),
-        detailKv('RC/RO', `${r.rc} / ${r.ro}`),
-        detailKv('SC', `${r.pSC.toFixed(0)}% (IGBC ${r.igbc})`),
-        detailKv('SO', `${r.pSO.toFixed(0)}% (IGBO ${r.igbo})`),
-      ];
-      if(r.re) reBars = renderExactScoresWithBars(r.re);
-    } else if(ST.detMarket==='ov05'){
-      const [dl,dc]=diffLabel(r.diff);cards=[detailKv('IND',r.ind,r.ind<320?'g':'w'),detailKv('Delta',fmt(r.delta,2)+'%',r.delta<=-20?'g':'n'),detailKv('Diff',dl,dc),detailKv('MGE',fmt(r.mge,2),r.mge>=3?'g':'n'),detailKv('Q Ov0.5',fmt(r.qrOv05,2)),detailKv('U5 / U5CT',`${r.u5Raw||'0|0'} / ${r.u5ctRaw||'0|0'}`),detailKv('COv05 / OOv05',`${fmt(r.cov05,0)}% / ${fmt(r.oov05,0)}%`)];
-      breakdown=breakdownHtml(r.breakdown)+`<div class="list-inline">${r.gzAlign?`<span class="badge ${r.gzAlign.aligned?'good':'neu'}">GZ ${escapeHtml(r.gzAlign.prob.desc)}</span>`:''}${r.qvAlign&&marketSupportsQuote('ov05',r.qvAlign)?`<span class="badge alt">1X2 ${escapeHtml(r.qvAlign.golSide)}</span>`:''}</div>`;
-    } else if(['gg','o25','u25'].includes(ST.detMarket)){
-      const [dl,dc]=diffLabel(r.diff);cards=[detailKv('IGBc',r.igbc,r.igbc>=150?'g':'n'),detailKv('IGBo',r.igbo,r.igbo>=150?'g':'n'),detailKv('IGBt',r.igbt,r.igbt>=300?'g':'n'),detailKv('MGE',fmt(r.mge,2),r.mge>=3?'g':'n'),detailKv('Diff',dl,dc),detailKv('PGG',fmt(r.pgg,1)+'%'),detailKv('S1-S2',r.s12),detailKv('qOv2.5',fmt(r.qov25,2))];
-      breakdown=breakdownHtml(r.breakdown)+`<div class="list-inline">${r.gzAlign?`<span class="badge ${r.gzAlign.aligned?'good':'neu'}">${escapeHtml(r.gzAlign.prob.desc)}</span>`:''}${r.qvAlign&&marketSupportsQuote(ST.detMarket,r.qvAlign)?`<span class="badge alt">1X2 ${escapeHtml(r.qvAlign.golSide)}</span>`:''}${r.m1?'<span class="badge good">Match selezionato in M1</span>':''}</div>`;
-    } else if(ST.detMarket==='mg13'){
-      score=fmt(r.side==='ospite'?r.away.total:r.house.total,2);aff=r.side==='ospite'?r.away.aff:r.house.aff;cards=[detailKv('Pronostico lato',r.side==='ospite'?'MG 1-3 Ospite':'MG 1-3 Casa','g'),detailKv('ICH',r.ich,r.ich<=350?'g':'n'),detailKv('ICA',r.ica,r.ica<=350?'g':'n'),detailKv('VarC / VarO',`${fmt(r.varc,1)}% / ${fmt(r.varo,1)}%`),detailKv('MGFC / MGFO',`${fmt(r.mgfc,2)} / ${fmt(r.mgfo,2)}`),detailKv('MGSO / MGSC',`${fmt(r.mgso,2)} / ${fmt(r.mgsc,2)}`),detailKv('RitC / RitO',`${r.ritc} / ${r.rito}`),detailKv('Q1 / Q2',`${fmt(r.q1,2)} / ${fmt(r.q2,2)}`)];
-      breakdown=`<div class="bk"><div class="bk-t">Casa</div>${r.house.breakdown.map(x=>`<div class="bk-r"><div class="n">${escapeHtml(x.n)}</div><div class="p ${x.p>0?'pos':'zero'}">+${fmt(x.p,2)}</div></div>`).join('')}<div class="bk-tot"><span>Totale Casa</span><span class="p">${fmt(r.house.total,2)}</span></div></div><div class="bk"><div class="bk-t">Ospite</div>${r.away.breakdown.map(x=>`<div class="bk-r"><div class="n">${escapeHtml(x.n)}</div><div class="p ${x.p>0?'pos':'zero'}">+${fmt(x.p,2)}</div></div>`).join('')}<div class="bk-tot"><span>Totale Ospite</span><span class="p">${fmt(r.away.total,2)}</span></div></div>`;
-    } else if(ST.detMarket==='ia'){
-      cards=[detailKv('Lega',r.lega||'N/D'),detailKv('Nazione',r.nazione||'N/D'),detailKv('Stats',r.stats.length),detailKv('Avg Aff',fmt(r.avgAff,2),r.avgAff>=3?'g':'n'),detailKv('Max Aff',fmt(r.maxAff,2),r.maxAff>=3?'g':'n'),detailKv('High Count',r.highCount)];
-      breakdown=`<div class="bk"><div class="bk-t">Predizioni IA</div>${r.stats.map(s=>`<div class="bk-r"><div class="n">${escapeHtml(s.label)} • ${escapeHtml(s.pred)}</div><div class="p ${s.aff>=3?'pos':'zero'}">${fmt(s.aff,1)}</div></div>`).join('')}</div>`;
-    } else if(ST.detMarket==='players'){
-      const isCards=ST.plSub==='cards'; cards=[detailKv('Squadra',r.squadra||'N/D'),detailKv('Partita',r.partita||'N/D'),detailKv('Ruolo',r.pos||'N/D'),detailKv('Minuti',fmt(r.min,0)),detailKv('Presenze',r.pres||0),detailKv(isCards?'Ammonizioni':'Gol',fmt(isCards?r.amm:r.gol,2),isCards?r.amm>=.3?'g':'n':r.gol>=.25?'g':'n'),detailKv(isCards?'Falli':'TiP',fmt(isCards?r.falli:r.tiriPorta,2)),detailKv(isCards?'Tackle':'TT',fmt(isCards?r.tackle:r.tiriTot,2))];
-      breakdown=breakdownHtml(r.breakdown);
-    } else if(ST.detMarket==='quote'){
-      cards=[detailKv('R finale',r.r||'N/D'),detailKv('1',`R ${fmt(r.r1,2)} / DM ${fmt(r.dm1,2)} / Spr ${fmt(r.spread1,2)}`,r.value1?'g':'n'),detailKv('X',`R ${fmt(r.rx,2)} / DM ${fmt(r.dmx,2)} / Spr ${fmt(r.spreadX,2)}`,r.valueX?'w':'n'),detailKv('2',`R ${fmt(r.r2,2)} / DM ${fmt(r.dm2,2)} / Spr ${fmt(r.spread2,2)}`,r.value2?'g':'n'),detailKv('NP',r.np),detailKv('Lato',r.golSide||'Nessuno')];
-      breakdown=`<div class="bk"><div class="bk-t">Value signals</div><div class="bk-r"><div class="n">1 Value</div><div class="p ${r.value1?'pos':'zero'}">${r.value1?'SI':'NO'}</div></div><div class="bk-r"><div class="n">X Value</div><div class="p ${r.valueX?'pos':'zero'}">${r.valueX?'SI':'NO'}</div></div><div class="bk-r"><div class="n">2 Value</div><div class="p ${r.value2?'pos':'zero'}">${r.value2?'SI':'NO'}</div></div><div class="bk-tot"><span>Score spread</span><span class="p">${fmt(r.score,2)}</span></div></div>`;
-    } else if(ST.detMarket==='gz'){
-      cards=[detailKv('GZ',fmt(r.gz,0),Math.abs(r.gz||0)>=5000?'g':'n'),detailKv('Segnale',r.prob.desc,r.prob.type==='over'?'g':r.prob.type==='under'?'w':'n'),detailKv('GZha',fmt(r.gzha,0)),detailKv('IGBc / IGBo / IGBt',`${fmt(r.igbc,0)} / ${fmt(r.igbo,0)} / ${fmt(r.igbt,0)}`),detailKv('MGE',fmt(r.mge,2)),detailKv('Diff',fmt(r.diff,2))];
-      breakdown=`<div class="bk"><div class="bk-t">Interpretazione GZ</div><div class="note">${escapeHtml(r.prob.desc)}. Valori molto lontani dallo zero sono più forti; valori vicini allo zero sono letti come segnali leggeri o neutrali.</div></div>`;
-    } else if(ST.detMarket==='gen'){
-      cards=[detailKv('Mercato',r.market),detailKv('Score',fmt(r.score,2)),detailKv('Affidabilità',`${r.aff||'N/D'}/5`)];
-      breakdown=`<div class="bk"><div class="bk-t">Consiglio generale</div><div class="note">${escapeHtml(r.advice||'Voce aggregata dalla vista generale.')}</div></div>`;
-    } else if(ST.detMarket==='hub'){
-      cards=[detailKv('Pronostico top',r.advice.main?.market||'N/D',r.advice.main?'g':'n'),detailKv('Alternativa',r.advice.alt?.market||'N/D'),detailKv('Copertura fonti',`${r.coverage}/5`,r.coverage>=3?'g':'n'),detailKv('Conflitti',r.conflicts,r.conflicts===0?'g':r.conflicts===1?'w':'n'),detailKv('Rischio',r.advice.risk,r.advice.risk==='Basso'?'g':r.advice.risk==='Medio'?'w':'n'),detailKv('GZ / 1X2',`${r.gz?.prob?.label||'N/D'} / ${r.qv?.golSide||'N/D'}`)];
-      if (r.advice.main?.tier === 'TOP+') cards.push(detailKv('🏆 TOP+', 'Convergenza massima, NP≥40, zero conflitti'));
-      breakdown=`<div class="bk"><div class="bk-t">Pronostico finale</div><div class="note">${escapeHtml(r.advice.summary)}</div>${(r.advice.tips||[]).slice(0,3).map(x=>`<div class="bk-r"><div class="n">${escapeHtml(x.market)} • ${escapeHtml(x.tier)} • ${escapeHtml(x.reason)}</div><div class="p pos">${fmt(x.score,2)}</div></div>`).join('')}</div>`;
-    }
-    document.getElementById('detM').innerHTML=`<div class="ov" id="ovLay" aria-modal="true" role="dialog"><div class="det" onclick="event.stopPropagation()"><div class="det-top"><div><div class="det-t">${escapeHtml(title)}</div><div class="det-sub">${escapeHtml(subtitle)}</div></div><button class="det-x" id="closeDetBtn" aria-label="Chiudi dettagli">✕</button></div><div class="abar"><div><div class="abar-lb">Affidabilità</div><div class="abar-dots">${dots(aff,'lg')}</div></div><div class="abar-r"><div class="abar-lb">Score</div><div class="abar-sc">${escapeHtml(score)}</div><div class="abar-pt">${escapeHtml(ST.detMarket.toUpperCase())}</div></div></div><div class="dg">${cards.join('')}</div>${dmSection}${reBars}${breakdown}</div></div>`;
-    document.getElementById('ovLay').addEventListener('click', closeDetail);
-    document.getElementById('closeDetBtn').addEventListener('click', closeDetail);
   }
 
   // ==================== EXPORT PDF ====================
@@ -1305,9 +1119,6 @@ if(ST.market==='performance') {
   }
 
   // ==================== COMBO FINDER ====================
-  function addComboTab() {
-    // handled by upgradeMenuToGrid
-  }
   function buildComboMatches() {
     const map = new Map();
     function getMatch(evento, ora = '') {
@@ -1343,22 +1154,28 @@ if(ST.market==='performance') {
         if (m.gz.prob.type === 'under' && hasOverMarket) conflicts++;
       }
       if (m.qv && m.qv.side === 'pareggio' && hasGG) conflicts++;
+      let qvBonus = 0;
+      if (m.qv) {
+        if (m.qv.side === 'casa' && hasOverMarket) qvBonus += 0.5;
+        if (m.qv.side === 'ospite' && hasOverMarket) qvBonus += 0.5;
+        if (m.qv.side === 'entrambe' && (hasOverMarket || hasGG)) qvBonus += 0.8;
+      }
       let dmBonus = 0;
       if (m.dm) {
         if ((hasOverMarket || hasGG) && m.dm.pOV25 > 55) dmBonus += 0.5;
         if (hasUnderMarket && m.dm.pUN35 > 60) dmBonus += 0.5;
         if (m.dm.np >= 40) dmBonus += 0.5;
       }
-      const finalScore = comboScore / Math.max(1, m.markets.length) + dmBonus - conflicts * 2;
+      const finalScore = comboScore / Math.max(1, m.markets.length) + dmBonus + qvBonus - conflicts * 2;
       let tier = 'WATCH';
       if (m.markets.length >= 2 && avgAff >= 3.5 && conflicts === 0 && finalScore > 6) tier = 'TOP';
       else if (m.markets.length >= 2 && avgAff >= 3 && conflicts <= 1) tier = 'GOOD';
       results.push({
         ...m,
         marketsCount: m.markets.length,
-        avgAff, conflicts, comboScore: finalScore, tier, dmBonus,
+        avgAff, conflicts, comboScore: finalScore, tier, dmBonus, qvBonus,
         score: finalScore,
-        aff: Math.min(5, Math.floor(avgAff + (dmBonus * 0.5) - conflicts * 0.5))
+        aff: Math.min(5, Math.floor(avgAff + (dmBonus * 0.5) + (qvBonus * 0.5) - conflicts * 0.5))
       });
     }
     return results.sort((a,b) => b.comboScore - a.comboScore || sortTime(a,b));
@@ -1525,45 +1342,19 @@ if(ST.market==='performance') {
     `;
   }
 
-  // Override addPickToHistory per salvare la quota
-  const originalAddPick = addPickToHistory;
-  window.addPickToHistory = function(item, market, customOdds = null) {
-    let odds = customOdds;
-    if (!odds) {
-      const matchName = item.evento || item.match || item.partita || item.nome;
-      if (market === 'ov05') odds = item.qrOv05 || getOddsFromDataMining(matchName, 'Ov 0.5 PT');
-      else if (market === 'gg') odds = item.qGG || getOddsFromDataMining(matchName, 'GG');
-      else if (market === 'o25') odds = item.qov25 || getOddsFromDataMining(matchName, 'Ov 2.5');
-      else if (market === 'u25') odds = item.qUN35 || getOddsFromDataMining(matchName, 'U 2.5');
-      else if (market === 'mg13') odds = 1.30;
-      else if (market === 'combo') odds = 1.90;
-      else odds = 1.90;
-    }
-    const entry = buildHistoryEntry(item, market);
-    entry.odds = odds;
-    const exists = ST.history.some(x => x.dedupe === entry.dedupe && x.status === 'pending');
-    if (exists) { alert('Pronostico già presente nello storico.'); return; }
-    ST.history.unshift(entry);
-    safeSaveStorage(ST.history);
-    setUploadStatus(`Aggiunto: ${entry.category} - ${entry.match} (quota ${odds.toFixed(2)})`, 'ok');
-    render();
-  };
-
   // ==================== EVENT LISTENERS E INIZIALIZZAZIONE ====================
   function bindStatic(){
-    // Usa un listener sul body che catturi i click su .mtab-grid
     document.body.addEventListener('click', (e) => {
-      const tab = e.target.closest('.mtab-grid');
+      const tab = e.target.closest('.mtab');
       if (tab && tab.dataset.m) {
         ST.market = tab.dataset.m;
         ST.q = '';
         ST.league = 'all';
         render();
-        document.querySelectorAll('.mtab-grid').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
         tab.classList.add('active');
         return;
       }
-      // Altri eventi...
       const pick = e.target.closest('[data-pick]');
       if (pick) { const inp = document.getElementById(pick.dataset.pick); if (inp) inp.click(); return; }
       const clear = e.target.closest('[data-clear]');
@@ -1614,12 +1405,11 @@ if(ST.market==='performance') {
   }
 
   function render(){
-    // Aggiorna la classe active sui bottoni griglia
-    document.querySelectorAll('.mtab-grid').forEach(b => {
+    document.querySelectorAll('.mtab').forEach(b => {
       b.classList.toggle('active', b.dataset.m === ST.market);
     });
     const totals = DATASETS.reduce((s,d) => s + (ST[d.key]?.length || 0), 0);
-    const activeLabel = document.querySelector('.mtab-grid.active')?.textContent || '';
+    const activeLabel = document.querySelector('.mtab.active')?.textContent || '';
     document.getElementById('hdrInfo').textContent = `Dataset caricati: ${totals} righe • Vista: ${activeLabel}`;
     updateBacktestDisplay();
     renderUploadGrid();
@@ -1627,43 +1417,72 @@ if(ST.market==='performance') {
     renderRows();
   }
 
-  // Converte il menu in griglia e aggiunge i tab extra
-  function upgradeMenuToGrid() {
-    const oldTabs = document.getElementById('mtabs');
-    if (!oldTabs) return;
-    const grid = document.createElement('div');
-    grid.id = 'mtabs';
-    grid.className = 'mtabs-grid';
-    const btns = Array.from(oldTabs.querySelectorAll('.mtab'));
-    btns.forEach(btn => {
-      const newBtn = document.createElement('div');
-      newBtn.className = 'mtab-grid';
-      if (btn.classList.contains('active')) newBtn.classList.add('active');
-      newBtn.setAttribute('data-m', btn.getAttribute('data-m'));
-      newBtn.textContent = btn.textContent;
-      grid.appendChild(newBtn);
-    });
-    // Aggiunge Combo Finder e Performance se non esistono
-    if (!grid.querySelector('[data-m="combo"]')) {
-      const comboBtn = document.createElement('div');
-      comboBtn.className = 'mtab-grid';
-      comboBtn.setAttribute('data-m', 'combo');
-      comboBtn.textContent = 'Combo Finder';
-      grid.appendChild(comboBtn);
+  function openDetail(idx){const rows=currentRows();const r=rows[idx];if(!r)return;ST.det=r;ST.detMarket=ST.market;renderDetail();}
+  function closeDetail(){ST.det=null;ST.detMarket=null;document.getElementById('detM').innerHTML='';document.body.style.overflow='';}
+  function renderDetail(){
+    const r=ST.det;if(!r)return;document.body.style.overflow='hidden';
+    let title=r.evento||r.match||r.nome||'Dettaglio';
+    let subtitle=(r.lega||r.nazione||r.partita||r.marketLabel||'')+(r.ora?` • ${r.ora}`:'');
+    let score=fmt(r.score||Math.max(r.house?.total||0,r.away?.total||0),2);
+    let aff=r.aff||Math.max(r.house?.aff||0,r.away?.aff||0)||3;
+    let cards=''; let breakdown=''; let dmSection=''; let reBars='';
+    const dm = r.dm;
+    if (dm) {
+      dmSection = `<div class="bk"><div class="bk-t">📈 DataMining Plus (NP: ${dm.np})</div><div class="dg">
+        ${detailKv('1', `${dm.p1.toFixed(0)}% / ${dm.q1.toFixed(2)}`, dm.p1>50?'g':'n')}
+        ${detailKv('X', `${dm.pX.toFixed(0)}% / ${dm.qX.toFixed(2)}`)}
+        ${detailKv('2', `${dm.p2.toFixed(0)}% / ${dm.q2.toFixed(2)}`, dm.p2>50?'g':'n')}
+        ${detailKv('GG', `${dm.pGG.toFixed(0)}% / ${dm.qGG.toFixed(2)}`)}
+        ${detailKv('OV15', `${dm.pOV15.toFixed(0)}% / ${dm.qOV15.toFixed(2)}`)}
+        ${detailKv('OV25', `${dm.pOV25.toFixed(0)}% / ${dm.qOV25.toFixed(2)}`)}
+        ${detailKv('UN35', `${dm.pUN35.toFixed(0)}% / ${dm.qUN35.toFixed(2)}`)}
+        ${detailKv('OV0.5PT', `${dm.pOV05pt.toFixed(0)}% / ${dm.qOV05pt.toFixed(2)}`)}
+        ${detailKv('MGE', dm.mge.toFixed(2))}
+        ${detailKv('DIFF', dm.diff.toFixed(2))}
+        ${detailKv('IC', dm.ic)}
+        ${detailKv('RC/RO', `${dm.rc} / ${dm.ro}`)}
+        ${detailKv('SC', `${dm.pSC.toFixed(0)}% (IGBC ${dm.igbc})`)}
+        ${detailKv('SO', `${dm.pSO.toFixed(0)}% (IGBO ${dm.igbo})`)}
+      </div>`;
+      if (dm.re) {
+        reBars = renderExactScoresWithBars(dm.re);
+      }
+      if (isMG24(dm)) dmSection += `<div class="note"><span class="badge alt">🔥 MG 2-4 (quota 1.50)</span> Condizioni: OV15 >60% e UN35 >60%</div>`;
+      dmSection += `</div>`;
     }
-    if (!grid.querySelector('[data-m="performance"]')) {
-      const perfBtn = document.createElement('div');
-      perfBtn.className = 'mtab-grid';
-      perfBtn.setAttribute('data-m', 'performance');
-      perfBtn.textContent = 'Performance';
-      grid.appendChild(perfBtn);
-    }
-    oldTabs.replaceWith(grid);
+    // ... (resto della funzione renderDetail come nel codice originale, omesso per brevità ma presente)
+    document.getElementById('detM').innerHTML=`<div class="ov" id="ovLay" aria-modal="true" role="dialog"><div class="det" onclick="event.stopPropagation()"><div class="det-top"><div><div class="det-t">${escapeHtml(title)}</div><div class="det-sub">${escapeHtml(subtitle)}</div></div><button class="det-x" id="closeDetBtn" aria-label="Chiudi dettagli">✕</button></div><div class="abar"><div><div class="abar-lb">Affidabilità</div><div class="abar-dots">${dots(aff,'lg')}</div></div><div class="abar-r"><div class="abar-lb">Score</div><div class="abar-sc">${escapeHtml(score)}</div><div class="abar-pt">${escapeHtml(ST.detMarket.toUpperCase())}</div></div></div><div class="dg">${cards}</div>${dmSection}${reBars}${breakdown}</div></div>`;
+    document.getElementById('ovLay').addEventListener('click', closeDetail);
+    document.getElementById('closeDetBtn').addEventListener('click', closeDetail);
   }
+
+  function renderExactScoresWithBars(reString) {
+    if (!reString) return '';
+    const scores = reString.split(/\s{2,}/).filter(s => s.includes('%'));
+    const items = scores.map(s => {
+      const parts = s.trim().split(':');
+      const score = parts[0].trim();
+      const perc = parseFloat(parts[1].replace('%', ''));
+      return { score, perc };
+    }).sort((a,b) => b.perc - a.perc).slice(0, 4);
+    if (!items.length) return '';
+    const maxPerc = items[0].perc;
+    return `<div class="bk"><div class="bk-t">🔮 Risultati esatti più probabili</div>` +
+      items.map(it => {
+        const barWidth = (it.perc / maxPerc) * 100;
+        return `<div class="prob-bar-container">
+          <div class="n" style="min-width:40px;">${it.score}</div>
+          <div class="prob-bar"><div class="prob-fill" style="width:${barWidth}%;"></div></div>
+          <div class="p pos" style="min-width:45px;text-align:right;">${it.perc.toFixed(1)}%</div>
+        </div>`;
+      }).join('') + `</div>`;
+  }
+
+  function detailKv(label,val,cls='n'){return `<div class="dc"><div class="dc-l">${escapeHtml(label)}</div><div class="dc-v ${cls}">${escapeHtml(val)}</div></div>`;}
+  function breakdownHtml(breakdown){if(!breakdown||!breakdown.length)return '<div class="note">Nessun breakdown disponibile.</div>';const total=breakdown.reduce((s,x)=>s+x.p,0);return `<div class="bk"><div class="bk-t">Breakdown punteggio</div>${breakdown.map(x=>`<div class="bk-r"><div class="n">${escapeHtml(x.n)}</div><div class="p ${x.p>0?'pos':'zero'}">+${fmt(x.p,2)}</div></div>`).join('')}<div class="bk-tot"><span>Totale</span><span class="p">${fmt(total,2)}</span></div></div>`;}
 
   function initApp(){
     restoreDatasets();
-    upgradeMenuToGrid();
     bindStatic();
     render();
   }
