@@ -162,14 +162,6 @@ button{border:none;background:none;cursor:pointer}
 .prob-bar-container{display:flex;align-items:center;gap:8px;margin:4px 0}
 .prob-bar{flex:1;height:6px;background:var(--s3);border-radius:3px;overflow:hidden}
 .prob-fill{height:100%;background:var(--grn);border-radius:3px}
-@media(max-width:600px){
-  .mrow{grid-template-columns:48px 1fr auto;gap:8px;padding:11px 12px}
-  .hdr{flex-direction:column;align-items:flex-start}
-  .dg{grid-template-columns:1fr}
-  .toolbar{flex-direction:column;align-items:stretch}
-  .toolbar .search,.toolbar .select,.toolbar .pdf-btn,.toolbar .aux-btn{width:100%}
-  .det{padding:18px 14px}
-}
 .mtabs-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, auto));
@@ -742,12 +734,14 @@ button{border:none;background:none;cursor:pointer}
       rows = ST.mg13.map(r => {
         const qv = getQuoteAlignment(r.evento);
         const house = mg13AFF_C(r,qv), away = mg13AFF_O(r,qv);
-        const aff = ST.sub==='ospite'?away.aff:house.aff;
+        const side = ST.sub==='ospite' ? 'ospite' : 'casa';
+        const aff = side==='ospite' ? away.aff : house.aff;
+        const total = side==='ospite' ? away.total : house.total;
         const dm = getDataMiningForMatch(r.evento);
         const dmFactor = getDMFactor(dm, 'mg13');
-        const combinedScore = Math.max(house.total, away.total) * dmFactor;
+        const combinedScore = total * dmFactor;
         const combinedAff = Math.min(5, Math.round(aff * dmFactor));
-        return { ...r, score: combinedScore, aff: combinedAff, originalScore: Math.max(house.total, away.total), originalAff: aff, house, away, breakdown: ST.sub==='ospite'?away.breakdown:house.breakdown, side: ST.sub==='ospite'?'ospite':'casa', m1c: mg13M1C(r), m1o: mg13M1O(r), qvAlign: qv, dm };
+        return { ...r, score: combinedScore, aff: combinedAff, side, house, away, breakdown: side==='ospite'?away.breakdown:house.breakdown, m1c: mg13M1C(r), m1o: mg13M1O(r), qvAlign: qv, dm };
       });
     } else if (ST.dataMining.length) {
       rows = ST.dataMining.map(dm => {
@@ -759,7 +753,7 @@ button{border:none;background:none;cursor:pointer}
     if(ST.sub==='m1')rows=rows.filter(r=>r.m1c||r.m1o);
     rows=filt(rows);
     if(ST.sortMode==='time')return rows.sort(sortTime);
-    return rows.sort((a,b)=>{const sa=ST.sub==='ospite'?a.away.total:a.house.total;const sb=ST.sub==='ospite'?b.away.total:b.house.total;return sb-sa||sortTime(a,b);});
+    return rows.sort((a,b)=>(b.score||0)-(a.score||0)||sortTime(a,b));
   }
   function getIaRows(){let rows=ST.ia.map(r=>{const qv=getQuoteAlignment(r.evento);return {...r,score:r.avgAff,aff:r.maxAff>=4?5:r.maxAff>=3?4:r.maxAff>=2.5?3:r.maxAff>=1.5?2:1,qvAlign:qv};});if(ST.iaCat!=='all')rows=rows.filter(r=>r.stats.some(s=>s.key===ST.iaCat));rows=filtLeague(rows,'lega');return sortRows(rows,'score');}
   function getPlayerRows(){const isCards=ST.plSub==='cards';let rows=(isCards?ST.plCards:ST.plShots).map(r=>{const a=isCards?scoreAmm(r):scoreGol(r);const qv=getQuoteAlignment(r.partita);return {...r,score:a.total,level:a.level,breakdown:a.breakdown,aff:a.total>=7?5:a.total>=5?4:a.total>=3.5?3:a.total>=2?2:1,marketLabel:isCards?'Cartellini':'Gol/Tiri',qvAlign:qv};});rows=filtLeague(rows,'lega');return sortRows(rows,'score');}
@@ -961,7 +955,8 @@ button{border:none;background:none;cursor:pointer}
     } else if (['gg','o25','u25'].includes(ST.market)) {
       mainInfo = `${indB(ST.market==='gg'?r.pgg:r.igbt,'igbt')} ${r.m1?'<span class="badge good">M1</span>':''}`;
     } else if (ST.market === 'mg13') {
-      mainInfo = `${indB(r.side==='ospite'?r.ica:r.ich,'mg')} ${(r.m1c||r.m1o)?'<span class="badge good">M1</span>':''}`;
+      const val = r.side==='ospite' ? r.ica : r.ich;
+      mainInfo = `${indB(val,'mg')} <span class="badge neu">${r.side==='ospite'?'Ospite':'Casa'}</span> ${(r.m1c||r.m1o)?'<span class="badge good">M1</span>':''}`;
     } else if (ST.market === 'ia') {
       mainInfo = r.stats.slice(0,2).map(s=>`<span class="badge neu">${s.key}:${s.pred}</span>`).join('');
     } else if (ST.market === 'players') {
@@ -1342,6 +1337,117 @@ button{border:none;background:none;cursor:pointer}
     `;
   }
 
+  // ==================== DETTAGLI MODALI ====================
+  function renderExactScoresWithBars(reString) {
+    if (!reString) return '';
+    const scores = reString.split(/\s{2,}/).filter(s => s.includes('%'));
+    const items = scores.map(s => {
+      const parts = s.trim().split(':');
+      const score = parts[0].trim();
+      const perc = parseFloat(parts[1].replace('%', ''));
+      return { score, perc };
+    }).sort((a,b) => b.perc - a.perc).slice(0, 4);
+    if (!items.length) return '';
+    const maxPerc = items[0].perc;
+    return `<div class="bk"><div class="bk-t">🔮 Risultati esatti più probabili</div>` +
+      items.map(it => {
+        const barWidth = (it.perc / maxPerc) * 100;
+        return `<div class="prob-bar-container">
+          <div class="n" style="min-width:40px;">${it.score}</div>
+          <div class="prob-bar"><div class="prob-fill" style="width:${barWidth}%;"></div></div>
+          <div class="p pos" style="min-width:45px;text-align:right;">${it.perc.toFixed(1)}%</div>
+        </div>`;
+      }).join('') + `</div>`;
+  }
+  function detailKv(label,val,cls='n'){return `<div class="dc"><div class="dc-l">${escapeHtml(label)}</div><div class="dc-v ${cls}">${escapeHtml(val)}</div></div>`;}
+  function breakdownHtml(breakdown){if(!breakdown||!breakdown.length)return '<div class="note">Nessun breakdown disponibile.</div>';const total=breakdown.reduce((s,x)=>s+x.p,0);return `<div class="bk"><div class="bk-t">Breakdown punteggio</div>${breakdown.map(x=>`<div class="bk-r"><div class="n">${escapeHtml(x.n)}</div><div class="p ${x.p>0?'pos':'zero'}">+${fmt(x.p,2)}</div></div>`).join('')}<div class="bk-tot"><span>Totale</span><span class="p">${fmt(total,2)}</span></div></div>`;}
+  function openDetail(idx){const rows=currentRows();const r=rows[idx];if(!r)return;ST.det=r;ST.detMarket=ST.market;renderDetail();}
+  function closeDetail(){ST.det=null;ST.detMarket=null;document.getElementById('detM').innerHTML='';document.body.style.overflow='';}
+  function renderDetail(){
+    const r=ST.det;if(!r)return;document.body.style.overflow='hidden';
+    let title=r.evento||r.match||r.nome||'Dettaglio';
+    let subtitle=(r.lega||r.nazione||r.partita||r.marketLabel||'')+(r.ora?` • ${r.ora}`:'');
+    let score=fmt(r.score||Math.max(r.house?.total||0,r.away?.total||0),2);
+    let aff=r.aff||Math.max(r.house?.aff||0,r.away?.aff||0)||3;
+    let cards=''; let breakdown=''; let dmSection=''; let reBars='';
+    const dm = r.dm;
+    if (dm) {
+      dmSection = `<div class="bk"><div class="bk-t">📈 DataMining Plus (NP: ${dm.np})</div><div class="dg">
+        ${detailKv('1', `${dm.p1.toFixed(0)}% / ${dm.q1.toFixed(2)}`, dm.p1>50?'g':'n')}
+        ${detailKv('X', `${dm.pX.toFixed(0)}% / ${dm.qX.toFixed(2)}`)}
+        ${detailKv('2', `${dm.p2.toFixed(0)}% / ${dm.q2.toFixed(2)}`, dm.p2>50?'g':'n')}
+        ${detailKv('GG', `${dm.pGG.toFixed(0)}% / ${dm.qGG.toFixed(2)}`)}
+        ${detailKv('OV15', `${dm.pOV15.toFixed(0)}% / ${dm.qOV15.toFixed(2)}`)}
+        ${detailKv('OV25', `${dm.pOV25.toFixed(0)}% / ${dm.qOV25.toFixed(2)}`)}
+        ${detailKv('UN35', `${dm.pUN35.toFixed(0)}% / ${dm.qUN35.toFixed(2)}`)}
+        ${detailKv('OV0.5PT', `${dm.pOV05pt.toFixed(0)}% / ${dm.qOV05pt.toFixed(2)}`)}
+        ${detailKv('MGE', dm.mge.toFixed(2))}
+        ${detailKv('DIFF', dm.diff.toFixed(2))}
+        ${detailKv('IC', dm.ic)}
+        ${detailKv('RC/RO', `${dm.rc} / ${dm.ro}`)}
+        ${detailKv('SC', `${dm.pSC.toFixed(0)}% (IGBC ${dm.igbc})`)}
+        ${detailKv('SO', `${dm.pSO.toFixed(0)}% (IGBO ${dm.igbo})`)}
+      </div>`;
+      if (dm.re) {
+        reBars = renderExactScoresWithBars(dm.re);
+      }
+      if (isMG24(dm)) dmSection += `<div class="note"><span class="badge alt">🔥 MG 2-4 (quota 1.50)</span> Condizioni: OV15 >60% e UN35 >60%</div>`;
+      dmSection += `</div>`;
+    }
+    if(ST.detMarket==='datamining'){
+      title = r.match;
+      subtitle = `NP: ${r.np} • ${r.ora}`;
+      cards = [
+        detailKv('1', `${r.p1.toFixed(0)}% / ${r.q1.toFixed(2)}`, r.p1>50?'g':'n'),
+        detailKv('X', `${r.pX.toFixed(0)}% / ${r.qX.toFixed(2)}`),
+        detailKv('2', `${r.p2.toFixed(0)}% / ${r.q2.toFixed(2)}`, r.p2>50?'g':'n'),
+        detailKv('GG', `${r.pGG.toFixed(0)}% / ${r.qGG.toFixed(2)}`),
+        detailKv('OV15', `${r.pOV15.toFixed(0)}% / ${r.qOV15.toFixed(2)}`),
+        detailKv('OV25', `${r.pOV25.toFixed(0)}% / ${r.qOV25.toFixed(2)}`),
+        detailKv('UN35', `${r.pUN35.toFixed(0)}% / ${r.qUN35.toFixed(2)}`),
+        detailKv('OV0.5PT', `${r.pOV05pt.toFixed(0)}% / ${r.qOV05pt.toFixed(2)}`),
+        detailKv('MGE', r.mge.toFixed(2)),
+        detailKv('DIFF', r.diff.toFixed(2)),
+        detailKv('IC', r.ic),
+        detailKv('RC/RO', `${r.rc} / ${r.ro}`),
+        detailKv('SC', `${r.pSC.toFixed(0)}% (IGBC ${r.igbc})`),
+        detailKv('SO', `${r.pSO.toFixed(0)}% (IGBO ${r.igbo})`),
+      ];
+      if(r.re) reBars = renderExactScoresWithBars(r.re);
+    } else if(ST.detMarket==='ov05'){
+      const [dl,dc]=diffLabel(r.diff);cards=[detailKv('IND',r.ind,r.ind<320?'g':'w'),detailKv('Delta',fmt(r.delta,2)+'%',r.delta<=-20?'g':'n'),detailKv('Diff',dl,dc),detailKv('MGE',fmt(r.mge,2),r.mge>=3?'g':'n'),detailKv('Q Ov0.5',fmt(r.qrOv05,2)),detailKv('U5 / U5CT',`${r.u5Raw||'0|0'} / ${r.u5ctRaw||'0|0'}`),detailKv('COv05 / OOv05',`${fmt(r.cov05,0)}% / ${fmt(r.oov05,0)}%`)];
+      breakdown=breakdownHtml(r.breakdown)+`<div class="list-inline">${r.gzAlign?`<span class="badge ${r.gzAlign.aligned?'good':'neu'}">GZ ${escapeHtml(r.gzAlign.prob.desc)}</span>`:''}${r.qvAlign&&marketSupportsQuote('ov05',r.qvAlign)?`<span class="badge alt">1X2 ${escapeHtml(r.qvAlign.golSide)}</span>`:''}</div>`;
+    } else if(['gg','o25','u25'].includes(ST.detMarket)){
+      const [dl,dc]=diffLabel(r.diff);cards=[detailKv('IGBc',r.igbc,r.igbc>=150?'g':'n'),detailKv('IGBo',r.igbo,r.igbo>=150?'g':'n'),detailKv('IGBt',r.igbt,r.igbt>=300?'g':'n'),detailKv('MGE',fmt(r.mge,2),r.mge>=3?'g':'n'),detailKv('Diff',dl,dc),detailKv('PGG',fmt(r.pgg,1)+'%'),detailKv('S1-S2',r.s12),detailKv('qOv2.5',fmt(r.qov25,2))];
+      breakdown=breakdownHtml(r.breakdown)+`<div class="list-inline">${r.gzAlign?`<span class="badge ${r.gzAlign.aligned?'good':'neu'}">${escapeHtml(r.gzAlign.prob.desc)}</span>`:''}${r.qvAlign&&marketSupportsQuote(ST.detMarket,r.qvAlign)?`<span class="badge alt">1X2 ${escapeHtml(r.qvAlign.golSide)}</span>`:''}${r.m1?'<span class="badge good">Match selezionato in M1</span>':''}</div>`;
+    } else if(ST.detMarket==='mg13'){
+      score=fmt(r.side==='ospite'?r.away.total:r.house.total,2);aff=r.side==='ospite'?r.away.aff:r.house.aff;cards=[detailKv('Pronostico lato',r.side==='ospite'?'MG 1-3 Ospite':'MG 1-3 Casa','g'),detailKv('ICH',r.ich,r.ich<=350?'g':'n'),detailKv('ICA',r.ica,r.ica<=350?'g':'n'),detailKv('VarC / VarO',`${fmt(r.varc,1)}% / ${fmt(r.varo,1)}%`),detailKv('MGFC / MGFO',`${fmt(r.mgfc,2)} / ${fmt(r.mgfo,2)}`),detailKv('MGSO / MGSC',`${fmt(r.mgso,2)} / ${fmt(r.mgsc,2)}`),detailKv('RitC / RitO',`${r.ritc} / ${r.rito}`),detailKv('Q1 / Q2',`${fmt(r.q1,2)} / ${fmt(r.q2,2)}`)];
+      breakdown=`<div class="bk"><div class="bk-t">Casa</div>${r.house.breakdown.map(x=>`<div class="bk-r"><div class="n">${escapeHtml(x.n)}</div><div class="p ${x.p>0?'pos':'zero'}">+${fmt(x.p,2)}</div></div>`).join('')}<div class="bk-tot"><span>Totale Casa</span><span class="p">${fmt(r.house.total,2)}</span></div></div><div class="bk"><div class="bk-t">Ospite</div>${r.away.breakdown.map(x=>`<div class="bk-r"><div class="n">${escapeHtml(x.n)}</div><div class="p ${x.p>0?'pos':'zero'}">+${fmt(x.p,2)}</div></div>`).join('')}<div class="bk-tot"><span>Totale Ospite</span><span class="p">${fmt(r.away.total,2)}</span></div></div>`;
+    } else if(ST.detMarket==='ia'){
+      cards=[detailKv('Lega',r.lega||'N/D'),detailKv('Nazione',r.nazione||'N/D'),detailKv('Stats',r.stats.length),detailKv('Avg Aff',fmt(r.avgAff,2),r.avgAff>=3?'g':'n'),detailKv('Max Aff',fmt(r.maxAff,2),r.maxAff>=3?'g':'n'),detailKv('High Count',r.highCount)];
+      breakdown=`<div class="bk"><div class="bk-t">Predizioni IA</div>${r.stats.map(s=>`<div class="bk-r"><div class="n">${escapeHtml(s.label)} • ${escapeHtml(s.pred)}</div><div class="p ${s.aff>=3?'pos':'zero'}">${fmt(s.aff,1)}</div></div>`).join('')}</div>`;
+    } else if(ST.detMarket==='players'){
+      const isCards=ST.plSub==='cards'; cards=[detailKv('Squadra',r.squadra||'N/D'),detailKv('Partita',r.partita||'N/D'),detailKv('Ruolo',r.pos||'N/D'),detailKv('Minuti',fmt(r.min,0)),detailKv('Presenze',r.pres||0),detailKv(isCards?'Ammonizioni':'Gol',fmt(isCards?r.amm:r.gol,2),isCards?r.amm>=.3?'g':'n':r.gol>=.25?'g':'n'),detailKv(isCards?'Falli':'TiP',fmt(isCards?r.falli:r.tiriPorta,2)),detailKv(isCards?'Tackle':'TT',fmt(isCards?r.tackle:r.tiriTot,2))];
+      breakdown=breakdownHtml(r.breakdown);
+    } else if(ST.detMarket==='quote'){
+      cards=[detailKv('R finale',r.r||'N/D'),detailKv('1',`R ${fmt(r.r1,2)} / DM ${fmt(r.dm1,2)} / Spr ${fmt(r.spread1,2)}`,r.value1?'g':'n'),detailKv('X',`R ${fmt(r.rx,2)} / DM ${fmt(r.dmx,2)} / Spr ${fmt(r.spreadX,2)}`,r.valueX?'w':'n'),detailKv('2',`R ${fmt(r.r2,2)} / DM ${fmt(r.dm2,2)} / Spr ${fmt(r.spread2,2)}`,r.value2?'g':'n'),detailKv('NP',r.np),detailKv('Lato',r.golSide||'Nessuno')];
+      breakdown=`<div class="bk"><div class="bk-t">Value signals</div><div class="bk-r"><div class="n">1 Value</div><div class="p ${r.value1?'pos':'zero'}">${r.value1?'SI':'NO'}</div></div><div class="bk-r"><div class="n">X Value</div><div class="p ${r.valueX?'pos':'zero'}">${r.valueX?'SI':'NO'}</div></div><div class="bk-r"><div class="n">2 Value</div><div class="p ${r.value2?'pos':'zero'}">${r.value2?'SI':'NO'}</div></div><div class="bk-tot"><span>Score spread</span><span class="p">${fmt(r.score,2)}</span></div></div>`;
+    } else if(ST.detMarket==='gz'){
+      cards=[detailKv('GZ',fmt(r.gz,0),Math.abs(r.gz||0)>=5000?'g':'n'),detailKv('Segnale',r.prob.desc,r.prob.type==='over'?'g':r.prob.type==='under'?'w':'n'),detailKv('GZha',fmt(r.gzha,0)),detailKv('IGBc / IGBo / IGBt',`${fmt(r.igbc,0)} / ${fmt(r.igbo,0)} / ${fmt(r.igbt,0)}`),detailKv('MGE',fmt(r.mge,2)),detailKv('Diff',fmt(r.diff,2))];
+      breakdown=`<div class="bk"><div class="bk-t">Interpretazione GZ</div><div class="note">${escapeHtml(r.prob.desc)}. Valori molto lontani dallo zero sono più forti; valori vicini allo zero sono letti come segnali leggeri o neutrali.</div></div>`;
+    } else if(ST.detMarket==='gen'){
+      cards=[detailKv('Mercato',r.market),detailKv('Score',fmt(r.score,2)),detailKv('Affidabilità',`${r.aff||'N/D'}/5`)];
+      breakdown=`<div class="bk"><div class="bk-t">Consiglio generale</div><div class="note">${escapeHtml(r.advice||'Voce aggregata dalla vista generale.')}</div></div>`;
+    } else if(ST.detMarket==='hub'){
+      cards=[detailKv('Pronostico top',r.advice.main?.market||'N/D',r.advice.main?'g':'n'),detailKv('Alternativa',r.advice.alt?.market||'N/D'),detailKv('Copertura fonti',`${r.coverage}/5`,r.coverage>=3?'g':'n'),detailKv('Conflitti',r.conflicts,r.conflicts===0?'g':r.conflicts===1?'w':'n'),detailKv('Rischio',r.advice.risk,r.advice.risk==='Basso'?'g':r.advice.risk==='Medio'?'w':'n'),detailKv('GZ / 1X2',`${r.gz?.prob?.label||'N/D'} / ${r.qv?.golSide||'N/D'}`)];
+      if (r.advice.main?.tier === 'TOP+') cards.push(detailKv('🏆 TOP+', 'Convergenza massima, NP≥40, zero conflitti'));
+      breakdown=`<div class="bk"><div class="bk-t">Pronostico finale</div><div class="note">${escapeHtml(r.advice.summary)}</div>${(r.advice.tips||[]).slice(0,3).map(x=>`<div class="bk-r"><div class="n">${escapeHtml(x.market)} • ${escapeHtml(x.tier)} • ${escapeHtml(x.reason)}</div><div class="p pos">${fmt(x.score,2)}</div></div>`).join('')}</div>`;
+    }
+    document.getElementById('detM').innerHTML=`<div class="ov" id="ovLay" aria-modal="true" role="dialog"><div class="det" onclick="event.stopPropagation()"><div class="det-top"><div><div class="det-t">${escapeHtml(title)}</div><div class="det-sub">${escapeHtml(subtitle)}</div></div><button class="det-x" id="closeDetBtn" aria-label="Chiudi dettagli">✕</button></div><div class="abar"><div><div class="abar-lb">Affidabilità</div><div class="abar-dots">${dots(aff,'lg')}</div></div><div class="abar-r"><div class="abar-lb">Score</div><div class="abar-sc">${escapeHtml(score)}</div><div class="abar-pt">${escapeHtml(ST.detMarket.toUpperCase())}</div></div></div><div class="dg">${cards}</div>${dmSection}${reBars}${breakdown}</div></div>`;
+    document.getElementById('ovLay').addEventListener('click', closeDetail);
+    document.getElementById('closeDetBtn').addEventListener('click', closeDetail);
+  }
+
   // ==================== EVENT LISTENERS E INIZIALIZZAZIONE ====================
   function bindStatic(){
     document.body.addEventListener('click', (e) => {
@@ -1416,70 +1522,6 @@ button{border:none;background:none;cursor:pointer}
     buildControls();
     renderRows();
   }
-
-  function openDetail(idx){const rows=currentRows();const r=rows[idx];if(!r)return;ST.det=r;ST.detMarket=ST.market;renderDetail();}
-  function closeDetail(){ST.det=null;ST.detMarket=null;document.getElementById('detM').innerHTML='';document.body.style.overflow='';}
-  function renderDetail(){
-    const r=ST.det;if(!r)return;document.body.style.overflow='hidden';
-    let title=r.evento||r.match||r.nome||'Dettaglio';
-    let subtitle=(r.lega||r.nazione||r.partita||r.marketLabel||'')+(r.ora?` • ${r.ora}`:'');
-    let score=fmt(r.score||Math.max(r.house?.total||0,r.away?.total||0),2);
-    let aff=r.aff||Math.max(r.house?.aff||0,r.away?.aff||0)||3;
-    let cards=''; let breakdown=''; let dmSection=''; let reBars='';
-    const dm = r.dm;
-    if (dm) {
-      dmSection = `<div class="bk"><div class="bk-t">📈 DataMining Plus (NP: ${dm.np})</div><div class="dg">
-        ${detailKv('1', `${dm.p1.toFixed(0)}% / ${dm.q1.toFixed(2)}`, dm.p1>50?'g':'n')}
-        ${detailKv('X', `${dm.pX.toFixed(0)}% / ${dm.qX.toFixed(2)}`)}
-        ${detailKv('2', `${dm.p2.toFixed(0)}% / ${dm.q2.toFixed(2)}`, dm.p2>50?'g':'n')}
-        ${detailKv('GG', `${dm.pGG.toFixed(0)}% / ${dm.qGG.toFixed(2)}`)}
-        ${detailKv('OV15', `${dm.pOV15.toFixed(0)}% / ${dm.qOV15.toFixed(2)}`)}
-        ${detailKv('OV25', `${dm.pOV25.toFixed(0)}% / ${dm.qOV25.toFixed(2)}`)}
-        ${detailKv('UN35', `${dm.pUN35.toFixed(0)}% / ${dm.qUN35.toFixed(2)}`)}
-        ${detailKv('OV0.5PT', `${dm.pOV05pt.toFixed(0)}% / ${dm.qOV05pt.toFixed(2)}`)}
-        ${detailKv('MGE', dm.mge.toFixed(2))}
-        ${detailKv('DIFF', dm.diff.toFixed(2))}
-        ${detailKv('IC', dm.ic)}
-        ${detailKv('RC/RO', `${dm.rc} / ${dm.ro}`)}
-        ${detailKv('SC', `${dm.pSC.toFixed(0)}% (IGBC ${dm.igbc})`)}
-        ${detailKv('SO', `${dm.pSO.toFixed(0)}% (IGBO ${dm.igbo})`)}
-      </div>`;
-      if (dm.re) {
-        reBars = renderExactScoresWithBars(dm.re);
-      }
-      if (isMG24(dm)) dmSection += `<div class="note"><span class="badge alt">🔥 MG 2-4 (quota 1.50)</span> Condizioni: OV15 >60% e UN35 >60%</div>`;
-      dmSection += `</div>`;
-    }
-    // ... (resto della funzione renderDetail come nel codice originale, omesso per brevità ma presente)
-    document.getElementById('detM').innerHTML=`<div class="ov" id="ovLay" aria-modal="true" role="dialog"><div class="det" onclick="event.stopPropagation()"><div class="det-top"><div><div class="det-t">${escapeHtml(title)}</div><div class="det-sub">${escapeHtml(subtitle)}</div></div><button class="det-x" id="closeDetBtn" aria-label="Chiudi dettagli">✕</button></div><div class="abar"><div><div class="abar-lb">Affidabilità</div><div class="abar-dots">${dots(aff,'lg')}</div></div><div class="abar-r"><div class="abar-lb">Score</div><div class="abar-sc">${escapeHtml(score)}</div><div class="abar-pt">${escapeHtml(ST.detMarket.toUpperCase())}</div></div></div><div class="dg">${cards}</div>${dmSection}${reBars}${breakdown}</div></div>`;
-    document.getElementById('ovLay').addEventListener('click', closeDetail);
-    document.getElementById('closeDetBtn').addEventListener('click', closeDetail);
-  }
-
-  function renderExactScoresWithBars(reString) {
-    if (!reString) return '';
-    const scores = reString.split(/\s{2,}/).filter(s => s.includes('%'));
-    const items = scores.map(s => {
-      const parts = s.trim().split(':');
-      const score = parts[0].trim();
-      const perc = parseFloat(parts[1].replace('%', ''));
-      return { score, perc };
-    }).sort((a,b) => b.perc - a.perc).slice(0, 4);
-    if (!items.length) return '';
-    const maxPerc = items[0].perc;
-    return `<div class="bk"><div class="bk-t">🔮 Risultati esatti più probabili</div>` +
-      items.map(it => {
-        const barWidth = (it.perc / maxPerc) * 100;
-        return `<div class="prob-bar-container">
-          <div class="n" style="min-width:40px;">${it.score}</div>
-          <div class="prob-bar"><div class="prob-fill" style="width:${barWidth}%;"></div></div>
-          <div class="p pos" style="min-width:45px;text-align:right;">${it.perc.toFixed(1)}%</div>
-        </div>`;
-      }).join('') + `</div>`;
-  }
-
-  function detailKv(label,val,cls='n'){return `<div class="dc"><div class="dc-l">${escapeHtml(label)}</div><div class="dc-v ${cls}">${escapeHtml(val)}</div></div>`;}
-  function breakdownHtml(breakdown){if(!breakdown||!breakdown.length)return '<div class="note">Nessun breakdown disponibile.</div>';const total=breakdown.reduce((s,x)=>s+x.p,0);return `<div class="bk"><div class="bk-t">Breakdown punteggio</div>${breakdown.map(x=>`<div class="bk-r"><div class="n">${escapeHtml(x.n)}</div><div class="p ${x.p>0?'pos':'zero'}">+${fmt(x.p,2)}</div></div>`).join('')}<div class="bk-tot"><span>Totale</span><span class="p">${fmt(total,2)}</span></div></div>`;}
 
   function initApp(){
     restoreDatasets();
